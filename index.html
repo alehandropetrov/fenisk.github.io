@@ -46,13 +46,6 @@
         button:hover {
             background: #ff1e3c;
         }
-
-        #message {
-            display: none;
-            font-size: 22px;
-            margin-top: 20px;
-            color: #00ffcc;
-        }
     </style>
 </head>
 <body>
@@ -62,14 +55,13 @@
     <input type="password" id="password" placeholder="Парола">
     <br>
     <button onclick="checkPassword()">Вход</button>
-    <div id="message">ЗАГУБИ СИ ВРЕМЕТО САМО</div>
 </div>
 
 <script>
 function checkPassword() {
     const pass = document.getElementById("password").value;
     if (pass === "Azis") {
-        document.getElementById("message").style.display = "block";
+        window.location.href = "body.html";
     } else {
         alert("Грешна парола!");
     }
