@@ -1,0 +1,541 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="color-scheme" content="dark light">
+<title>EON CRM</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<body><div style="display: flex; align-items: center;">
+<div style="padding: 3px;"><a href='index.php'><img src=eon_logo.png width="200px"></a></div>
+<div style="padding: 3px;"><a href='ch_pass.php'><img src=user_i.png></a> Ivaylo Georgiev</div>
+<div style="padding: 3px;"><button class=b1 onClick='window.location.href="logout.php"'><img src=logout_i.png title='Logout'></button></div>
+</div>
+<br><br>
+<form name=ff><div style='display: flex; width: 60%'><div style='width: 50%; margin: 10px;'><fieldset class=fset><legend class=leg>Devices</legend><label class=lab>Household ID or STB SN or IP</label><br><input class=mod name=sr type=search style='background-color: black; color: white;' placeholder='HH ID/STB SN/IP' size=13> <input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='search();' value='Search Devices'></fieldset></div><div style='margin: 10px;width: 50%; '><fieldset class=fset><legend class=leg>Subscriptions</legend><label class=lab>Household ID or Username or service ID/phone</label><br><input class=mod name=hh type=search style='background-color: black; color: white;' placeholder='HH ID/Usern/IP.1234567/87654444' size=15> <input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='search_hh();' value='Search Households'></fieldset></div></div><div style='display: flex; width: 60%'><div style='width: 50%; margin: 10px;'><fieldset class=fset><legend class=leg>OTP auth</legend><div style='display: inline-block; margin-left: 10px;'><label class=lab>Code</label><br><input class=mod name=otp type=text style='background-color: black; color: white;' placeholder='ABCDEF' size=8></div><div style='display: inline-block; margin-left: 10px;'><label class=lab>Subscription ID</label><br><input name=sid type=text style='background-color: black; color: white;' placeholder='1282' class=mod size=8></div><div style='display: inline-block; margin-left: 10px;'><label class=lab>Household ID</label><br><input name=hid type=text style='background-color: black; color: white;' placeholder='88765' class=mod size=8></div><input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='go_otp();' value='Go!'></fieldset></div><div style='margin: 10px;width: 50%; '><fieldset class=fset><legend class=leg>add STB</legend><div style='display: inline-block;margin-left: 10px;'><label class=lab>STB Serial No</label><br><input class=mod name=sn type=text style='background-color: black; color: white;' placeholder='UG202010123' size=13></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Subscription ID</label><br><input name=sid2 type=text style='background-color: black; color: white;' placeholder='1223' class=mod size=8></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Household ID</label><br><input name=hid2 type=text style='background-color: black; color: white;' placeholder='34543' class=mod size=8></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Combo</label><br><input name=m type=checkbox style='background-color: black; color: white;' class=mod size=8 value=1></div><input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='go_stb();' value='Go!'></fieldset></div></div></form><style>
+@keyframes reveal { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
+.path { stroke-dashoffset: 200; stroke-dasharray: 200; animation: reveal 1s linear alternate infinite; }
+</style>
+<div id=mdiv></div>
+<div id=mdiv1></div>
+
+<script>
+async function search() {
+ var ss=document.ff.sr.value;
+ if ( ss.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/) ) search_byip(ss); 
+ else if ( ss.match(/UG/) || ss.match(/9320051/) ) search_stb(ss); 
+ else {
+   di=document.getElementById('mdiv');
+   di2=document.getElementById('mdiv1');
+   di2.innerHTML="";
+   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+   var tt=new Date();
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Devices for HH = " + ss); }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req.php?uri=v1/devices@householdId="+ss+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+   }
+}
+
+function reset_pin(hh) {
+   di=document.getElementById('mdiv');
+   di2=document.getElementById('mdiv1');
+   di2.innerHTML="";
+   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+   var tt=new Date();
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var o_obj=JSON.parse(xhr.responseText); di.innerHTML="Response: " + o_obj.status + ", " + o_obj.errorMessage; }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "reset_pin.php?h="+hh+"&t=" + tt, true);
+   xhr.send(null);
+}
+
+function search_stb(ss) {
+   di=document.getElementById('mdiv');
+   di2=document.getElementById('mdiv1');
+   di2.innerHTML="";
+   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+   var tt=new Date();
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Device SN = " + ss); }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req.php?uri=v1/devices@serialNumber="+ss+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+}
+
+function disp_devs(d, o, h3) {
+var x=o.length;
+if ( x == 0 ) { d.innerHTML="Nothing found"; return 0; }
+var din="<h3>" + h3 + "</h3><table border=1 cellspacing=0 cellpadding=3><tr><td align=center><b>HH ID</td><td align=center><b>Device ID</td><td align=center><b>SN</td><td align=center><b>Name</td><td align=center><b>Model</td><td align=center><b>IP</td><td align=center><b>Last</td><td align=center><b>Status</td><td align=center><b>Notes</td><td align=center><b>...</td></tr>";
+for ( z=0; z < x ; z++ ) {
+hh_links="";
+o[z].householdIds.forEach(h => { hh_links+="<a href=javascript:search_hh2("+h+"); title='Get Subsriptions'>"+h+"</a>, "; } );
+din+="<tr>";
+din+="<td>" + hh_links + "</td>";
+din+="<td>" + o[z].id + "</td>";
+if ( o[z].modelName == "SDOTT0202" || o[z].modelName == "CHOTT0102" || o[z].modelName == "SDSTB01" || o[z].modelName == "SDSTB02" || o[z].modelName == "KNSTB02") din+="<td>" + o[z].serialNumber + " <a href='https://octopus.vivacom.cdn.united.cloud/dashboard/summary?serialNumber=" + o[z].serialNumber + "' target='_blank'><img src=oct.png></a></td>";
+else din+="<td>" + o[z].serialNumber + "</td>";
+din+="<td>" + o[z].name + "</td>";
+din+="<td>" + o[z].modelName + "</td>";
+din+="<td>" + o[z].ipAddress + "</td>";
+din+="<td>" + o[z].lastAccessTime + "</td>";
+din+="<td>" + o[z].status + "</td>";
+din+="<td>" + o[z].systemSwVersion.systemName + " " + o[z].systemSwVersion.version + "</td>";
+din+="<td><a href='javascript:del_stb(" + o[z].id + ", " + o[z].householdIds[0] + ");'><img src=del.png title='Delete Device!'></a></td>";
+din+="</tr>";
+}
+din+="</table>";
+d.innerHTML=din;
+}
+
+var pp = {};
+pp[273]="EPG_EON_Mobile";
+pp[48]="SVOD_IDJKids";
+pp[49]="SVOD_HOPS";
+pp[51]="SVOD_NGPL";
+pp[45]="SVOD_DaVinci";
+pp[66]="EPG_MINI";
+pp[6]="vivaexternal_vo";
+pp[11]="EPG_TV_L+_2020";
+pp[7]="vivaexternal_ch";
+pp[18]="EPG_TV_XL+_2020";
+pp[37]="SVOD_DISNEY";
+pp[36]="SVOD_HBO";
+pp[43]="SVOD_PCB";
+pp[42]="SVOD_NICK";
+pp[46]="SVOD_DISCOVERY";
+pp[47]="SVOD_History";
+pp[59]="SVOD_MBABY";
+pp[60]="SVOD_ABC";
+pp[61]="SVOD_ZAUD";
+pp[62]="SVOD_DORC";
+pp[44]="SVOD_Vivacom";
+pp[64]="SVOD_DISNEYENG";
+pp[63]="SVOD_EPIC";
+pp[68]="EPG_LIGHT";
+pp[70]="EPG_FULL";
+pp[72]="EPG_PREMIUM";
+pp[74]="EPG_DIEMA";
+pp[76]="EPG_MAXSport";
+pp[78]="EPG_Cinemax";
+pp[80]="EPG_CinemaxHBO";
+pp[81]="EPG_7/8";
+pp[85]="EPG_TV_S+_2020";
+pp[9]="EPG_TV_M+_2020";
+pp[14]="EPG_TV_2L+_2020";
+pp[97]="EPG_DTH_S_2020";
+pp[98]="EPG_DTH_M_2020";
+pp[99]="EPG_DTH_L_2020";
+pp[100]="EPG_DTH_2L_2020";
+pp[111]="EPG_HBO";
+pp[113]="EPG_DTH_Staff";
+pp[118]="EPG_18+";
+pp[119]="EPG_Russian";
+pp[120]="EPG_Turkish";
+pp[121]="SVOD_Cinestar";
+pp[122]="IPTV_Staff";
+pp[123]="EPG_IPTV_GO";
+pp[124]="test viva hbo";
+pp[127]="VivaAll_CUTV_7";
+pp[131]="VAll live/SO ON";
+pp[3]="SVOD_DISNEY";
+pp[4]="SVOD_NICK";
+pp[40]="EPG_DIEMA";
+pp[50]="EPG_FULL";
+pp[38]="EPG_MINI";
+pp[39]="EPG_LIGHT";
+pp[8]="EPG_PREMIUM";
+pp[52]="EPG_MAXSport";
+pp[20]="SVOD_DaVinci";
+pp[5]="SVOD_EPIC";
+pp[25]="SVOD_DISCOVERY";
+pp[26]="SVOD_History";
+pp[27]="SVOD_IDJKids";
+pp[28]="SVOD_HOPS";
+pp[30]="SVOD_MBABY";
+pp[31]="SVOD_ABC";
+pp[32]="SVOD_ZAUD";
+pp[33]="SVOD_DORC";
+pp[4]="SVOD_DISNEYENG";
+pp[2]="SVOD_PCB";
+pp[13]="SVOD_Vivacom";
+pp[54]="EPG_Cinemax";
+pp[55]="EPG_CinemaxHBO";
+pp[57]="EPG_7/8";
+pp[1]="SVOD_HBO";
+pp[29]="SVOD_NGPL";
+pp[83]="EPG_TV_S+_2020";
+pp[86]="EPG_TV_M+_2020";
+pp[101]="EPG_TV_L+_2020";
+pp[102]="EPG_TV_2L+_2020";
+pp[103]="EPG_TV_XL+_2020";
+pp[104]="EPG_DTH_S_2020";
+pp[105]="EPG_DTH_M_2020";
+pp[106]="EPG_DTH_L_2020";
+pp[107]="EPG_DTH_2L_2020";
+pp[109]="EPG_HBO";
+pp[114]="EPG_Russian";
+pp[115]="EPG_18+";
+pp[116]="EPG_Turkish";
+pp[117]="SVOD_Cinestar";
+pp[126]="Viva_CUTV_7";
+pp[130]="Viva live/SO ON";
+pp[329]="vivabizexternal";
+pp[330]="vivabizexternal";
+pp[331]="VivacomBiz_LSOE";
+pp[332]="VIVABIZ_CUTV_7";
+pp[367]="EPG_CinemaxHBO";
+pp[368]="EPG_Cinemax";
+pp[369]="EPG_18+";
+pp[333]="Tests 1";
+pp[370]="EPG_7/8";
+pp[363]="EPG_Diema";
+pp[371]="EPG_Russian";
+pp[372]="EPG_Turkish";
+pp[364]="EPG_MAXSport";
+pp[365]="EPG_EON_BIZ";
+pp[374]="EPG_Nova";
+pp[366]="EPG_HBO";
+pp[375]="EPG_bTV_Pack";
+pp[376]="EPG_Nova_Pack";
+
+
+var global_hh=0;
+
+async function search_hh() {
+ di=document.getElementById('mdiv');
+ di.innerHTML="";
+ di2=document.getElementById('mdiv1');
+ di2.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+ var ss=document.ff.hh.value;
+ var hh_id=0;
+ global_hh=0;
+ if ( ss.match(/[TI][PV]\.[M]?\.?[0-9N-]{6,}/) || ss.match(/[89][789][0-9]{7}/) || ss.match(/IP\.PN5-\d{7}/) ) { get_hh_s(ss); await sleep(500); while ( global_hh == 1 ) { await sleep(500); console.log("waiting...."); } hh_id=global_hh; }
+ else if ( ss.match(/[a-zA-Z@.]{3,}/) ) { get_hh_u(ss); await sleep(1000); hh_id=global_hh; }
+ else hh_id=ss;
+ if ( hh_id == 0 ) di2.innerHTML="Error.... Cannot find household ID.";
+ else {
+   var tt=new Date();
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                di2.innerHTML="";
+                if(xhr.status  == 200) { var sub_obj = JSON.parse(xhr.responseText); disp_sub(di, sub_obj, "Subscriptions for HH = "+hh_id+" <button class=but onClick=reset_pin("+hh_id+");>Reset PIN</button>"); }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req.php?uri=v2/subscriptions@householdId="+hh_id+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+   }
+}
+
+function search_ss(sid) {
+ di=document.getElementById('mdiv');
+ di.innerHTML="";
+ di2=document.getElementById('mdiv1');
+ di2.innerHTML="";
+ di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+   var tt=new Date();
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var sub_obj = JSON.parse(xhr.responseText); disp_devs(di, sub_obj, "Devices for SubscrID = " + sid); }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req.php?uri=v1/devices/@subscriptionId="+sid+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+}
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+function get_hh_u(ss) {
+   var tt=new Date();
+   var h=sha256(ss);
+   di=document.getElementById('mdiv');
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var hh_obj = JSON.parse(xhr.responseText); global_hh=hh_obj[0].id; di.innerHTML="Found HH id= " + global_hh; }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req.php?uri=v1/households@hashedUsername="+h+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+}
+
+function get_hh_s(ss) {
+   var tt=new Date();
+   global_hh=1;
+   di=document.getElementById('mdiv');
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { global_hh=eval(xhr.responseText); di.innerHTML="Found HH id= " + global_hh; }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req2.php?ss="+ss+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+}
+
+function search_byip(ss) {
+   var tt=new Date();
+   di=document.getElementById('mdiv');
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Devices for IP = " + ss); }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "req3.php?ip="+ss+"&m=GET&t=" + tt, true);
+   xhr.send(null);
+}
+
+function disp_sub(d, o, h3) {
+var x=o.length;
+var global_pp="";
+var pps = ['boza', '1st', 'Multi'];
+if ( x == 0 ) { d.innerHTML="Nothing found"; return 0; }
+var din="<h3>" + h3 + "</h3><table border=1 cellspacing=0 cellpadding=3><tr><td align=center><b>HH ID</td><td align=center><b>Subs. ID</td><td align=center><b>Name</td><td align=center><b>From</td><td align=center><b>To</td><td align=center><b>Prod</td><td align=center><b>Max Sess</td><td align=center><b>Max Devs</td><td align=center><b>Pack</td><td align=center><b>Status</td></tr>";
+
+
+for ( z=0; z < x ; z++ ) {
+global_pp="";
+o[z].packageIds.forEach(p => { global_pp+=pp[p] + ", "; } );
+din+="<tr>";
+din+="<td><a href=javascript:search_hh1(" + o[z].householdId + "); title='Get Devices'>" + o[z].householdId + "</a></td>";
+din+="<td><a href=javascript:search_ss(" + o[z].id + "); title='Get Devices'>" + o[z].id + "</a></td>";
+din+="<td>" + o[z].name + "</td>";
+din+="<td>" + o[z].validFrom.replace("T"," ") + "</td>";
+din+="<td>" + o[z].validTo.replace("T"," ") + "</td>";
+din+="<td>" + pps[o[z].productId] + "</td>";
+din+="<td align=right>" + o[z].maxConcurrentSessions + "</td>";
+din+="<td align=right>" + o[z].maxDevices + "</td>";
+din+="<td>" + global_pp + "</td>";
+din+="<td>" + o[z].status + "</td>";
+din+="</tr>";
+}
+din+="</table>";
+d.innerHTML=din;
+}
+
+function search_hh1(hh_id) { document.ff.sr.value=hh_id; search(); }
+function search_hh2(hh_id) { document.ff.hh.value=hh_id; search_hh(); }
+
+function go_otp() {
+    var tt = new Date();
+    var di2 = document.getElementById('mdiv1');
+    di2.innerHTML = "";
+    var di = document.getElementById('mdiv');
+    di.innerHTML = "<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg'>" +
+        "<path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 " +
+        "M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 " +
+        "M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+
+    var s = document.ff.sid.value;
+    var o = document.ff.otp.value; // оригиналния текст от полето
+    var h = document.ff.hid.value;
+
+    // Base64 encode
+    var o_b64 = btoa(o); // използваме вградения Base64 енкодер
+
+    var xhr;
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var o_obj = JSON.parse(xhr.responseText);
+                di.innerHTML = "Response: " + o_obj.status + ", " + o_obj.errorMessage;
+            } else {
+                di.innerHTML = "Error code " + xhr.status;
+            }
+        }
+    };
+
+    xhr.open("GET", "send_otp64.php?s=" + encodeURIComponent(s) + "&o=" + encodeURIComponent(o_b64) + "&h=" + encodeURIComponent(h) + "&t=" + tt, true);
+    xhr.send(null);
+}
+
+function go_stb() {
+    var tt = new Date();
+    var di2 = document.getElementById('mdiv1');
+    di2.innerHTML = "";
+    var di = document.getElementById('mdiv');
+    di.innerHTML = "<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg'>" +
+        "<path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 " +
+        "M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 " +
+        "M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+
+    var s = document.ff.sid2.value;
+    var sno = document.ff.sn.value;
+    var h = document.ff.hid2.value;
+    var m = document.ff.m.checked ? 1 : 0;
+
+    // Base64 encode за sno
+    var sno_b64 = btoa(sno);
+
+    var xhr;
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var o_obj = JSON.parse(xhr.responseText);
+                di.innerHTML = "Response: " + o_obj.status + ", " + o_obj.errorMessage;
+            } else {
+                di.innerHTML = "Error code " + xhr.status;
+            }
+        }
+    };
+
+    xhr.open(
+        "GET",
+        "add_stb64.php?s=" + encodeURIComponent(s) +
+        "&sn=" + encodeURIComponent(sno_b64) +
+        "&h=" + encodeURIComponent(h) +
+        "&m=" + m +
+        "&t=" + tt,
+        true
+    );
+    xhr.send(null);
+}
+
+function del_stb(s, h) {
+  var r = confirm("Sure?");
+  if (r == true) del_stb1(s, h);
+}
+
+function del_stb1(s, h) {
+   var tt=new Date();
+   di2=document.getElementById('mdiv1');
+   di2.innerHTML="";
+   di=document.getElementById('mdiv');
+   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
+   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
+   else
+   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
+                if(xhr.status  == 200) { var o_obj=JSON.parse(xhr.responseText); di.innerHTML="Response: " + o_obj.status + ", " + o_obj.errorMessage; }
+                else di.innerHTML="Error code " + xhr.status;
+           }
+      }
+   xhr.open("GET", "del_stb.php?s="+s+"&h="+h+"&t=" + tt, true);
+   xhr.send(null);
+}
+
+function sha256(ascii) {
+	function rightRotate(value, amount) {
+		return (value>>>amount) | (value<<(32 - amount));
+	};
+	
+	var mathPow = Math.pow;
+	var maxWord = mathPow(2, 32);
+	var lengthProperty = 'length'
+	var i, j; // Used as a counter across the whole file
+	var result = ''
+
+	var words = [];
+	var asciiBitLength = ascii[lengthProperty]*8;
+	
+	var hash = sha256.h = sha256.h || [];
+	var k = sha256.k = sha256.k || [];
+	var primeCounter = k[lengthProperty];
+	var hash = [], k = [];
+	var primeCounter = 0;
+
+	var isComposite = {};
+	for (var candidate = 2; primeCounter < 64; candidate++) {
+		if (!isComposite[candidate]) {
+			for (i = 0; i < 313; i += candidate) {
+				isComposite[i] = candidate;
+			}
+			hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
+			k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
+		}
+	}
+	
+	ascii += '\x80'
+	while (ascii[lengthProperty]%64 - 56) ascii += '\x00'
+	for (i = 0; i < ascii[lengthProperty]; i++) {
+		j = ascii.charCodeAt(i);
+		if (j>>8) return;
+		words[i>>2] |= j << ((3 - i)%4)*8;
+	}
+	words[words[lengthProperty]] = ((asciiBitLength/maxWord)|0);
+	words[words[lengthProperty]] = (asciiBitLength)
+	
+	for (j = 0; j < words[lengthProperty];) {
+		var w = words.slice(j, j += 16);
+		var oldHash = hash;
+		hash = hash.slice(0, 8);
+		
+		for (i = 0; i < 64; i++) {
+			var i2 = i + j;
+			var w15 = w[i - 15], w2 = w[i - 2];
+
+			var a = hash[0], e = hash[4];
+			var temp1 = hash[7]
+				+ (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+				+ ((e&hash[5])^((~e)&hash[6]))
+				+ k[i]
+				+ (w[i] = (i < 16) ? w[i] : (
+						w[i - 16]
+						+ (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15>>>3))
+						+ w[i - 7]
+						+ (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2>>>10))
+					)|0
+				);
+			var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+				+ ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+			
+			hash = [(temp1 + temp2)|0].concat(hash);
+			hash[4] = (hash[4] + temp1)|0;
+		}
+		
+		for (i = 0; i < 8; i++) {
+			hash[i] = (hash[i] + oldHash[i])|0;
+		}
+	}
+	
+	for (i = 0; i < 8; i++) {
+		for (j = 3; j + 1; j--) {
+			var b = (hash[i]>>(j*8))&255;
+			result += ((b < 16) ? 0 : '') + b.toString(16);
+		}
+	}
+	return result.toUpperCase();
+}
+
+</script>
+
+</body>
+</html>
