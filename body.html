@@ -2,24 +2,140 @@
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
-<title>Result</title>
+<title>Hacker Mode</title>
 
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    background: black;
-    color: #00ff00;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: monospace;
-    font-size: 26px;
-}
+    body {
+        margin: 0;
+        height: 100vh;
+        background: black;
+        overflow: hidden;
+        font-family: monospace;
+    }
+
+    /* текст */
+    .text {
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        text-align: center;
+        color: #00ff00;
+        font-size: 28px;
+        text-shadow: 0 0 10px #00ff00;
+        z-index: 3;
+    }
+
+    /* картината */
+    img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.5;
+        z-index: 1;
+    }
+
+    /* matrix */
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+
+    /* ACCESS GRANTED */
+    .access {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #00ff00;
+        font-size: 50px;
+        text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+        opacity: 0;
+        z-index: 4;
+        animation: glitch 0.2s infinite;
+    }
+
+    .show {
+        animation: showAccess 2s forwards, glitch 0.2s infinite;
+    }
+
+    @keyframes showAccess {
+        0% { opacity: 0; transform: translate(-50%, -60%) scale(0.8); }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translate(-50%, -40%) scale(1.2); }
+    }
+
+    @keyframes glitch {
+        0% { transform: translate(-50%, -50%) skew(0deg); }
+        20% { transform: translate(-48%, -52%) skew(2deg); }
+        40% { transform: translate(-52%, -48%) skew(-2deg); }
+        60% { transform: translate(-49%, -51%) skew(1deg); }
+        80% { transform: translate(-51%, -49%) skew(-1deg); }
+        100% { transform: translate(-50%, -50%) skew(0deg); }
+    }
 </style>
 </head>
 
 <body>
-    ПРОДЪЛЖАВАШ ДА СИ ГУБИШ ВРЕМЕТО ;)
+
+<div class="text">ПРОДЪЛЖАВАШ ДА СИ ГУБИШ ВРЕМЕТО</div>
+
+<img src="sandbox:/mnt/data/a_dark_cyberpunk_tech_scene_overall_like_a_hacker.png">
+
+<canvas id="matrix"></canvas>
+
+<div id="access" class="access">ACCESS GRANTED</div>
+
+<script>
+// MATRIX
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+
+const drops = [];
+for (let i = 0; i < columns; i++) drops[i] = 1;
+
+function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff00";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+
+setInterval(draw, 33);
+
+// resize
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+// ACCESS GRANTED animation
+setTimeout(() => {
+    document.getElementById("access").classList.add("show");
+}, 2000);
+
+</script>
+
 </body>
 </html>
