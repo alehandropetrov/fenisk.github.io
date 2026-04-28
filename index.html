@@ -1,69 +1,115 @@
 <!DOCTYPE html>
 <html lang="bg">
 <head>
-    <meta charset="UTF-8">
-    <title>Secret Page</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e1e2f, #3a3a6a);
-            color: white;
-        }
+<meta charset="UTF-8">
+<title>Terminal Access</title>
 
-        .box {
-            background: rgba(0,0,0,0.6);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
+<style>
+    body {
+        margin: 0;
+        background: black;
+        color: #00ff00;
+        font-family: monospace;
+        overflow: hidden;
+    }
 
-        input {
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            margin-top: 10px;
-            width: 200px;
-            text-align: center;
-        }
+    /* терминал ефект */
+    .terminal {
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+    }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            background: #ff4b5c;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+    .login-box {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+    }
 
-        button:hover {
-            background: #ff1e3c;
-        }
-    </style>
+    input {
+        background: black;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        padding: 10px;
+        width: 220px;
+        text-align: center;
+        font-family: monospace;
+    }
+
+    button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background: black;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #00ff00;
+        color: black;
+    }
+
+    .blink {
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
+</style>
 </head>
+
 <body>
 
-<div class="box">
-    <h2>Въведи парола</h2>
-    <input type="password" id="password" placeholder="Парола">
+<div class="terminal" id="terminal"></div>
+
+<div class="login-box">
+    <div>ENTER ACCESS KEY:</div>
+    <input type="password" id="password">
     <br>
-    <button onclick="checkPassword()">Вход</button>
+    <button onclick="checkPassword()">RUN</button>
 </div>
 
 <script>
+const terminal = document.getElementById("terminal");
+
+const lines = [
+"Initializing system...",
+"Connecting to server...",
+"Bypassing firewall...",
+"Loading modules...",
+"Access denied... retry required",
+"Waiting for input...",
+];
+
+let i = 0;
+
+function typeLines() {
+    if (i < lines.length) {
+        terminal.innerHTML += lines[i] + "\n";
+        i++;
+        setTimeout(typeLines, 800);
+    } else {
+        terminal.innerHTML += "\n> SYSTEM READY\n";
+    }
+}
+
+typeLines();
+
 function checkPassword() {
     const pass = document.getElementById("password").value;
+
     if (pass === "Azis") {
-        window.location.href = "body.html";
+        terminal.innerHTML += "\n> ACCESS GRANTED...\n> REDIRECTING...\n";
+        setTimeout(() => {
+            window.location.href = "body.html";
+        }, 1500);
     } else {
-        alert("Грешна парола!");
+        terminal.innerHTML += "\n> WRONG KEY DETECTED ❌\n";
     }
 }
 </script>
