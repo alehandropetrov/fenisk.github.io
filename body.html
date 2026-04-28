@@ -5,77 +5,112 @@
 <title>Hacker Mode</title>
 
 <style>
-    body {
-        margin: 0;
-        height: 100vh;
-        background: black;
-        overflow: hidden;
-        font-family: monospace;
-    }
+body {
+    margin: 0;
+    height: 100vh;
+    background: black;
+    overflow: hidden;
+    font-family: monospace;
+}
 
-    /* текст */
-    .text {
-        position: absolute;
-        top: 20px;
-        width: 100%;
-        text-align: center;
-        color: #00ff00;
-        font-size: 28px;
-        text-shadow: 0 0 10px #00ff00;
-        z-index: 3;
-    }
+/* текст */
+.text {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    color: #00ff00;
+    font-size: 28px;
+    text-shadow: 0 0 10px #00ff00;
+    z-index: 3;
+}
 
-    /* картината */
-    img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.5;
-        z-index: 1;
-    }
+/* image */
+img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+    z-index: 1;
+}
 
-    /* matrix */
-    canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 2;
-    }
+/* matrix */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
 
-    /* ACCESS GRANTED */
-    .access {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #00ff00;
-        font-size: 50px;
-        text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
-        opacity: 0;
-        z-index: 4;
-        animation: glitch 0.2s infinite;
-    }
+/* ACCESS */
+.access {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #00ff00;
+    font-size: 50px;
+    text-shadow: 0 0 20px #00ff00;
+    opacity: 0;
+    z-index: 4;
+}
 
-    .show {
-        animation: showAccess 2s forwards, glitch 0.2s infinite;
-    }
+.show {
+    animation: showAccess 2s forwards, glitch 0.2s infinite;
+}
 
-    @keyframes showAccess {
-        0% { opacity: 0; transform: translate(-50%, -60%) scale(0.8); }
-        20% { opacity: 1; }
-        80% { opacity: 1; }
-        100% { opacity: 0; transform: translate(-50%, -40%) scale(1.2); }
-    }
+/* glitch */
+@keyframes glitch {
+    0% { transform: translate(-50%, -50%); }
+    25% { transform: translate(-48%, -52%); }
+    50% { transform: translate(-52%, -48%); }
+    75% { transform: translate(-49%, -51%); }
+    100% { transform: translate(-50%, -50%); }
+}
 
-    @keyframes glitch {
-        0% { transform: translate(-50%, -50%) skew(0deg); }
-        20% { transform: translate(-48%, -52%) skew(2deg); }
-        40% { transform: translate(-52%, -48%) skew(-2deg); }
-        60% { transform: translate(-49%, -51%) skew(1deg); }
-        80% { transform: translate(-51%, -49%) skew(-1deg); }
-        100% { transform: translate(-50%, -50%) skew(0deg); }
-    }
+@keyframes showAccess {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* log */
+.log {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #00ff00;
+    font-size: 14px;
+    max-width: 40%;
+    white-space: pre-line;
+    z-index: 5;
+}
+
+/* ALERT MODE */
+.alert {
+    animation: flash 0.3s infinite;
+}
+
+@keyframes flash {
+    0% { background: black; }
+    50% { background: #200; }
+    100% { background: black; }
+}
+
+/* SHAKE */
+.shake {
+    animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(3px,-3px); }
+    50% { transform: translate(-3px,3px); }
+    75% { transform: translate(3px,3px); }
+    100% { transform: translate(-3px,-3px); }
+}
 </style>
 </head>
 
@@ -88,6 +123,8 @@
 <canvas id="matrix"></canvas>
 
 <div id="access" class="access">ACCESS GRANTED</div>
+
+<div id="log" class="log"></div>
 
 <script>
 // MATRIX
@@ -105,17 +142,17 @@ const drops = [];
 for (let i = 0; i < columns; i++) drops[i] = 1;
 
 function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
 
     ctx.fillStyle = "#00ff00";
     ctx.font = fontSize + "px monospace";
 
     for (let i = 0; i < drops.length; i++) {
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        if (drops[i]*fontSize > canvas.height && Math.random() > 0.975) {
             drops[i] = 0;
         }
         drops[i]++;
@@ -130,11 +167,71 @@ window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
 });
 
-// ACCESS GRANTED animation
+// ACCESS
 setTimeout(() => {
     document.getElementById("access").classList.add("show");
 }, 2000);
 
+// -------- FAKE DATA --------
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+function randomIP(){
+    return `${rand(11,223)}.${rand(0,255)}.${rand(0,255)}.${rand(1,254)}`;
+}
+
+function randomCoords(){
+    return `${(Math.random()*180-90).toFixed(5)}, ${(Math.random()*360-180).toFixed(5)}`;
+}
+
+const fakeIP = randomIP();
+const fakeCity = ["Sofia","Berlin","London","New York","Tokyo"][rand(0,4)];
+const fakeISP = ["CloudNet","FiberLink","GlobalNet","CyberStream"][rand(0,3)];
+const fakeGPS = randomCoords();
+const browser = navigator.userAgent;
+
+// LOG
+const log = document.getElementById("log");
+
+const fakeLogs = [
+"> Initializing trace...",
+"> Scanning network...",
+`> IP FOUND: ${fakeIP}`,
+`> ISP: ${fakeISP}`,
+`> Location: ${fakeCity}`,
+`> GPS: ${fakeGPS}`,
+`> Browser: ${browser}`,
+"> Accessing webcam...",
+"> Camera access granted 📷",
+"> Downloading private data...",
+"> Tracking live position...",
+"> WARNING: USER DETECTED ⚠",
+"> ACTIVATING ALERT MODE 🚨",
+"> INJECTING PAYLOAD...",
+"> ACCESS COMPLETE ✔"
+];
+
+let line = 0;
+let char = 0;
+
+function typeLog() {
+    if (line < fakeLogs.length) {
+        if (char < fakeLogs[line].length) {
+            log.innerHTML += fakeLogs[line].charAt(char);
+            char++;
+            setTimeout(typeLog, 20);
+        } else {
+            log.innerHTML += "\n";
+            if (fakeLogs[line].includes("ALERT")) {
+                document.body.classList.add("alert","shake");
+            }
+            line++;
+            char = 0;
+            setTimeout(typeLog, 200);
+        }
+    }
+}
+
+setTimeout(typeLog, 1000);
 </script>
 
 </body>
