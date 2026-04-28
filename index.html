@@ -1,541 +1,601 @@
-<html>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="color-scheme" content="dark light">
-<title>EON CRM</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-<body><div style="display: flex; align-items: center;">
-<div style="padding: 3px;"><a href='index.php'><img src=eon_logo.png width="200px"></a></div>
-<div style="padding: 3px;"><a href='ch_pass.php'><img src=user_i.png></a> Ivaylo Georgiev</div>
-<div style="padding: 3px;"><button class=b1 onClick='window.location.href="logout.php"'><img src=logout_i.png title='Logout'></button></div>
-</div>
-<br><br>
-<form name=ff><div style='display: flex; width: 60%'><div style='width: 50%; margin: 10px;'><fieldset class=fset><legend class=leg>Devices</legend><label class=lab>Household ID or STB SN or IP</label><br><input class=mod name=sr type=search style='background-color: black; color: white;' placeholder='HH ID/STB SN/IP' size=13> <input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='search();' value='Search Devices'></fieldset></div><div style='margin: 10px;width: 50%; '><fieldset class=fset><legend class=leg>Subscriptions</legend><label class=lab>Household ID or Username or service ID/phone</label><br><input class=mod name=hh type=search style='background-color: black; color: white;' placeholder='HH ID/Usern/IP.1234567/87654444' size=15> <input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='search_hh();' value='Search Households'></fieldset></div></div><div style='display: flex; width: 60%'><div style='width: 50%; margin: 10px;'><fieldset class=fset><legend class=leg>OTP auth</legend><div style='display: inline-block; margin-left: 10px;'><label class=lab>Code</label><br><input class=mod name=otp type=text style='background-color: black; color: white;' placeholder='ABCDEF' size=8></div><div style='display: inline-block; margin-left: 10px;'><label class=lab>Subscription ID</label><br><input name=sid type=text style='background-color: black; color: white;' placeholder='1282' class=mod size=8></div><div style='display: inline-block; margin-left: 10px;'><label class=lab>Household ID</label><br><input name=hid type=text style='background-color: black; color: white;' placeholder='88765' class=mod size=8></div><input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='go_otp();' value='Go!'></fieldset></div><div style='margin: 10px;width: 50%; '><fieldset class=fset><legend class=leg>add STB</legend><div style='display: inline-block;margin-left: 10px;'><label class=lab>STB Serial No</label><br><input class=mod name=sn type=text style='background-color: black; color: white;' placeholder='UG202010123' size=13></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Subscription ID</label><br><input name=sid2 type=text style='background-color: black; color: white;' placeholder='1223' class=mod size=8></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Household ID</label><br><input name=hid2 type=text style='background-color: black; color: white;' placeholder='34543' class=mod size=8></div><div style='display: inline-block;margin-left: 10px;'><label class=lab>Combo</label><br><input name=m type=checkbox style='background-color: black; color: white;' class=mod size=8 value=1></div><input type=button style='background-color: black; color: white;margin-left: 10px;' onclick='go_stb();' value='Go!'></fieldset></div></div></form><style>
-@keyframes reveal { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
-.path { stroke-dashoffset: 200; stroke-dasharray: 200; animation: reveal 1s linear alternate infinite; }
-</style>
-<div id=mdiv></div>
-<div id=mdiv1></div>
 
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>IrIS</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=11" />
+    <link runat="server" rel="shortcut icon" href="/img/vivacom.ico" type="image/x-icon" />
+    <link runat="server" rel="icon" href="/img/vivacom.ico" type="image/ico" />
+    
+    
+        <link rel="stylesheet" href="/bundles/css/base.first.min.css" />
+        <link rel="stylesheet" href="/bundles/css/base.second.min.css" />
+        <link rel="stylesheet" href="/lib/theme/css/style-responsive.css" />
+        <link rel="stylesheet" href="/bundles/css/kendo.min.css" />
+    
+
+    
+    
+
+
+    <script>
+        var AppGlobal = {
+            "user": {
+                name: 'alehandro.petrov',
+                roles: []
+            }
+        };
+
+            AppGlobal.user.roles.push('User');
+            AppGlobal.user.roles.push('Iris_Services_CSR');
+            AppGlobal.user.roles.push('Iris_EContractManagement_User');
+            AppGlobal.user.roles.push('Iris_Support_PermanentEIdUser');
+            AppGlobal.user.roles.push('Iris_TvServices_EonPrepaidTv');
+            AppGlobal.user.roles.push('Iris_Support_SurveyConsents');
+            AppGlobal.user.roles.push('Iris_Services_TDCSR');
+            AppGlobal.user.roles.push('Iris_Internet_Activation_Codes');
+            AppGlobal.user.roles.push('Iris_Internet_Audit_Info');
+            AppGlobal.user.roles.push('AddressServerSiebelUser');
+            AppGlobal.user.roles.push('Iris_MrcCalculator_User');
+            AppGlobal.user.roles.push('Iris_Tnps_SurveyDetails');
+            AppGlobal.user.roles.push('Iris_SalesForce_CS_User');
+            AppGlobal.user.roles.push('Iris_MobileServices_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_DeviceSettings_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_DeviceSettings_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_AuditInfo_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_Roaming_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_Roaming_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_ServiceSettings_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_ServiceSettings_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_Sms_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_Sms_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_ServiceRestrictions_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_ServiceRestrictions_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_TariffPackets_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_TariffPackets_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_CustomerRestrictions_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_CustomerRestrictions_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_NetworkRestrictions_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_CallRestrictions_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_CallRestrictions_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_SendDeviceSettings_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_SendDeviceSettings_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_PinPuk_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_PinPuk_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_CallForwarding_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_CallForwarding_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_VoiceMail_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_VoiceMail_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_DataLimits_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_RoamingStatus_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_RoamingStatus_Read');
+            AppGlobal.user.roles.push('Iris_AuditInfo_Write');
+            AppGlobal.user.roles.push('Iris_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_PermanentRoaming_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_ActiveSession_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_ActiveSession_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_TvGo_Read');
+            AppGlobal.user.roles.push('Iris_MobixServices_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_TariffPackets_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteSettings_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_Lte_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteInfo_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteSessionHistory_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteGoogleMap_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteRelocations_Read');
+            AppGlobal.user.roles.push('Iris_TvServices_Read');
+            AppGlobal.user.roles.push('Iris_TvServices_TvGo_Read');
+            AppGlobal.user.roles.push('Iris_Support_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_Support_Read');
+            AppGlobal.user.roles.push('Iris_Support_Gpon_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLte_LastSession_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_ANO_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_GeneralInformation_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_Map_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_Rank_Write');
+            AppGlobal.user.roles.push('Iris_FixedServices_Reset_Write');
+            AppGlobal.user.roles.push('Iris_FixedServices_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_TariffPackets_Read');
+            AppGlobal.user.roles.push('Iris_TvServices_Controlpanel_Read');
+            AppGlobal.user.roles.push('Iris_Consents_Managment_Write');
+            AppGlobal.user.roles.push('Iris_Consents_Managment_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_TariffPacketsTable_Read');
+            AppGlobal.user.roles.push('Iris_TvServices_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_WhiteList_Read');
+            AppGlobal.user.roles.push('Iris_FixedServices_StaticSections_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_StaticSections_Read');
+            AppGlobal.user.roles.push('Iris_Support_ManageAutomaticBolton_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_PendingPenalty_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_ActivePenalty_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_WhiteListHistory_Read');
+            AppGlobal.user.roles.push('Iris_Permanent_Roaming_CustomerHistory_Read');
+            AppGlobal.user.roles.push('Iris_Support_ManageAutomaticBolton_ManageRestriction_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_DigitalServicesIncludedDiscounts_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_GiftAdjustmentDetails_Read');
+            AppGlobal.user.roles.push('Iris_Manage_Automatic_Pack_Read');
+            AppGlobal.user.roles.push('Iris_Support_ManageAutomaticBolton_Smses_Read');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_TariffPackets_Write');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_TariffPackets_Read');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_Write');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_Read');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_StaticSections_Read');
+            AppGlobal.user.roles.push('Iris_Support_WeekendPackets_Write');
+            AppGlobal.user.roles.push('Iris_Support_WeekendPackets_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_AutomaticPack_Write');
+            AppGlobal.user.roles.push('Iris_Mobix_AutomaticPack_Read');
+            AppGlobal.user.roles.push('Iris_Tidal_Read');
+            AppGlobal.user.roles.push('Iris_MobileServicesPrepaid_Auditinfo_Read');
+            AppGlobal.user.roles.push('Iris_Support_EVignettes_Read');
+            AppGlobal.user.roles.push('Iris_Support_EonVouchers_Read');
+            AppGlobal.user.roles.push('Iris_Support_EonVouchers_Search_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_HappyCall_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_HappyCall_Read');
+            AppGlobal.user.roles.push('Iris_HappyCall_Read');
+            AppGlobal.user.roles.push('Iris_HappyCall_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_HappyCall_History_Read');
+            AppGlobal.user.roles.push('Iris_HappyCall_Manage_Write');
+            AppGlobal.user.roles.push('Iris_HappyCall_Manage_Read');
+            AppGlobal.user.roles.push('Iris_Econtract_Managment_Write');
+            AppGlobal.user.roles.push('Iris_Econtract_Managment_Read');
+            AppGlobal.user.roles.push('Iris_Econtract_Managment_OfferLogReview_Write');
+            AppGlobal.user.roles.push('Iris_Econtract_Managment_OfferLogReview_Read');
+            AppGlobal.user.roles.push('Iris_Support_ElectronicIdentification_Write');
+            AppGlobal.user.roles.push('Iris_Support_ElectronicIdentification_Read');
+            AppGlobal.user.roles.push('Iris_TvServices_EonPrepaidTv_Read');
+            AppGlobal.user.roles.push('Iris_Support_SurveyConsents_Write');
+            AppGlobal.user.roles.push('Iris_Support_SurveyConsents_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_NetworkRestrictions_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_DataLimits_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_WelcomeSmses_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_WelcomeSmses_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_Apn_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_Apn_Read');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLte_Lock_Write');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLte_Unlock_Write');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLteNeighbourException_Write');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLte_Reset_Write');
+            AppGlobal.user.roles.push('Iris_Mobix_MobixLte_SetRank_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_SmsMessage_Read');
+            AppGlobal.user.roles.push('Iris_MobileServices_DataLimits__Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_ActivateCallForwarding_Write');
+            AppGlobal.user.roles.push('Iris_MobileServices_PermanentRoamingEuInfo_Read');
+            AppGlobal.user.roles.push('Iris_Internet_ActivationCodes_Read');
+            AppGlobal.user.roles.push('Iris_Internet_Read');
+            AppGlobal.user.roles.push('Iris_Internet_AuditInfo_Read');
+            AppGlobal.user.roles.push('Iris_AddressServer_Form_Write');
+            AppGlobal.user.roles.push('Iris_AddressServer_Form_Read');
+            AppGlobal.user.roles.push('Iris_MrcCalculator_Read');
+            AppGlobal.user.roles.push('Iris_Tnps_Read');
+            AppGlobal.user.roles.push('Iris_Tnps_SurveyDetails_Read');
+            AppGlobal.user.roles.push('Iris_SalesForce_Tnps_Read');
+            AppGlobal.user.roles.push('Iris_SalesForce_Tnps_SurveyDetails_Read');
+            AppGlobal.user.roles.push('Iris_SalesForce_Read');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_Read');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_Information_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_NewCustomer_CombineAndSave_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_NewCustomer_Stand&#x430;lone_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_OldCustomer_CombineAndSave_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_OldCustomer_Standalone_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_Offers_Retention_Write');
+            AppGlobal.user.roles.push('Iris_SalesForce_CustomerService_Write');
+    </script>
+    <script src="/bundles/js/base.head.min.js"></script>
+    <script src="/bundles/js/kendo.min.js"></script>
+
+    
 <script>
-async function search() {
- var ss=document.ff.sr.value;
- if ( ss.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/) ) search_byip(ss); 
- else if ( ss.match(/UG/) || ss.match(/9320051/) ) search_stb(ss); 
- else {
-   di=document.getElementById('mdiv');
-   di2=document.getElementById('mdiv1');
-   di2.innerHTML="";
-   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-   var tt=new Date();
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Devices for HH = " + ss); }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req.php?uri=v1/devices@householdId="+ss+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-   }
-}
+    var IrisLocalization = (function() {
+        var dataObj = {"printerror":"Възникна грешка. Моля опитайте по-късно!","uploaddocumentserror":"Документите не успяха да се запазят!","kissonlyoneoffererror":"Моля изберете повече от една оферта под КиС","signatureеmployeerequired":"Нужен е подпис от служител!","smaxmailsendwarning":"Заявката към SMAx не е изпратена успешно. Изпратен е e-mail с данните за офертата. Моля свържете се с координатор","sendoffererror":"Възникна грешка. Заявката не е изпратена.","signatureclientrequired":"Нужен е подпис от клиент!","select":"--Избери--","freeunitnoduplicationallowed":"Може да бъде добавен само един продукт:","kissdifferentservicetypeerror":"Необходимо е избраните оферти да бъдат с различен тип на услугата!","sendoffersuccess":"Заявката е успешно изпратена.","no":"Не","chooseoffer":"Изберете една оферта","yes":"Да","address":"Адрес","minimumpromooffersmessage":"Моля изберете 2 или повече оферти!","kissstandaloneoffererror":"Трябва всички избрани оферти да са от КиС","billingacccolumnname":"Кл. номер","billingstatuserror":"Клиентът има просрочени задължения. Не може да се предостави нова услуга или да се сключи нов договор.","maximumstandaloneoffersmessage":"Моля изберете точно една оферта!","sendcustomermail":"Мейлът беше изпратен успешно!","thankyouforchoosingvivacom":"Благодарим Ви, че избрахте Виваком!","sendcustomermailerror":"Възникна грешка. Мейлът не беше изпратен.","multiplestandaloneoffererror":"Всички избрани оферти трябва да са от КиС","offersentwithoutcustomermailerror":"Заявката е изпратена успешно, но възникна грешка при изпращане на имейл към клиент.","choosebillingaccount":"Изберете един клиентски номер","chooseadddress":"Изберете един адрес"};
+        var culture = 'bg';
 
-function reset_pin(hh) {
-   di=document.getElementById('mdiv');
-   di2=document.getElementById('mdiv1');
-   di2.innerHTML="";
-   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-   var tt=new Date();
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var o_obj=JSON.parse(xhr.responseText); di.innerHTML="Response: " + o_obj.status + ", " + o_obj.errorMessage; }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "reset_pin.php?h="+hh+"&t=" + tt, true);
-   xhr.send(null);
-}
+        function getSiteTexts(key) {
+            keyLower = key.toLowerCase();
+            var val = dataObj[keyLower];
 
-function search_stb(ss) {
-   di=document.getElementById('mdiv');
-   di2=document.getElementById('mdiv1');
-   di2.innerHTML="";
-   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-   var tt=new Date();
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Device SN = " + ss); }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req.php?uri=v1/devices@serialNumber="+ss+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-}
-
-function disp_devs(d, o, h3) {
-var x=o.length;
-if ( x == 0 ) { d.innerHTML="Nothing found"; return 0; }
-var din="<h3>" + h3 + "</h3><table border=1 cellspacing=0 cellpadding=3><tr><td align=center><b>HH ID</td><td align=center><b>Device ID</td><td align=center><b>SN</td><td align=center><b>Name</td><td align=center><b>Model</td><td align=center><b>IP</td><td align=center><b>Last</td><td align=center><b>Status</td><td align=center><b>Notes</td><td align=center><b>...</td></tr>";
-for ( z=0; z < x ; z++ ) {
-hh_links="";
-o[z].householdIds.forEach(h => { hh_links+="<a href=javascript:search_hh2("+h+"); title='Get Subsriptions'>"+h+"</a>, "; } );
-din+="<tr>";
-din+="<td>" + hh_links + "</td>";
-din+="<td>" + o[z].id + "</td>";
-if ( o[z].modelName == "SDOTT0202" || o[z].modelName == "CHOTT0102" || o[z].modelName == "SDSTB01" || o[z].modelName == "SDSTB02" || o[z].modelName == "KNSTB02") din+="<td>" + o[z].serialNumber + " <a href='https://octopus.vivacom.cdn.united.cloud/dashboard/summary?serialNumber=" + o[z].serialNumber + "' target='_blank'><img src=oct.png></a></td>";
-else din+="<td>" + o[z].serialNumber + "</td>";
-din+="<td>" + o[z].name + "</td>";
-din+="<td>" + o[z].modelName + "</td>";
-din+="<td>" + o[z].ipAddress + "</td>";
-din+="<td>" + o[z].lastAccessTime + "</td>";
-din+="<td>" + o[z].status + "</td>";
-din+="<td>" + o[z].systemSwVersion.systemName + " " + o[z].systemSwVersion.version + "</td>";
-din+="<td><a href='javascript:del_stb(" + o[z].id + ", " + o[z].householdIds[0] + ");'><img src=del.png title='Delete Device!'></a></td>";
-din+="</tr>";
-}
-din+="</table>";
-d.innerHTML=din;
-}
-
-var pp = {};
-pp[273]="EPG_EON_Mobile";
-pp[48]="SVOD_IDJKids";
-pp[49]="SVOD_HOPS";
-pp[51]="SVOD_NGPL";
-pp[45]="SVOD_DaVinci";
-pp[66]="EPG_MINI";
-pp[6]="vivaexternal_vo";
-pp[11]="EPG_TV_L+_2020";
-pp[7]="vivaexternal_ch";
-pp[18]="EPG_TV_XL+_2020";
-pp[37]="SVOD_DISNEY";
-pp[36]="SVOD_HBO";
-pp[43]="SVOD_PCB";
-pp[42]="SVOD_NICK";
-pp[46]="SVOD_DISCOVERY";
-pp[47]="SVOD_History";
-pp[59]="SVOD_MBABY";
-pp[60]="SVOD_ABC";
-pp[61]="SVOD_ZAUD";
-pp[62]="SVOD_DORC";
-pp[44]="SVOD_Vivacom";
-pp[64]="SVOD_DISNEYENG";
-pp[63]="SVOD_EPIC";
-pp[68]="EPG_LIGHT";
-pp[70]="EPG_FULL";
-pp[72]="EPG_PREMIUM";
-pp[74]="EPG_DIEMA";
-pp[76]="EPG_MAXSport";
-pp[78]="EPG_Cinemax";
-pp[80]="EPG_CinemaxHBO";
-pp[81]="EPG_7/8";
-pp[85]="EPG_TV_S+_2020";
-pp[9]="EPG_TV_M+_2020";
-pp[14]="EPG_TV_2L+_2020";
-pp[97]="EPG_DTH_S_2020";
-pp[98]="EPG_DTH_M_2020";
-pp[99]="EPG_DTH_L_2020";
-pp[100]="EPG_DTH_2L_2020";
-pp[111]="EPG_HBO";
-pp[113]="EPG_DTH_Staff";
-pp[118]="EPG_18+";
-pp[119]="EPG_Russian";
-pp[120]="EPG_Turkish";
-pp[121]="SVOD_Cinestar";
-pp[122]="IPTV_Staff";
-pp[123]="EPG_IPTV_GO";
-pp[124]="test viva hbo";
-pp[127]="VivaAll_CUTV_7";
-pp[131]="VAll live/SO ON";
-pp[3]="SVOD_DISNEY";
-pp[4]="SVOD_NICK";
-pp[40]="EPG_DIEMA";
-pp[50]="EPG_FULL";
-pp[38]="EPG_MINI";
-pp[39]="EPG_LIGHT";
-pp[8]="EPG_PREMIUM";
-pp[52]="EPG_MAXSport";
-pp[20]="SVOD_DaVinci";
-pp[5]="SVOD_EPIC";
-pp[25]="SVOD_DISCOVERY";
-pp[26]="SVOD_History";
-pp[27]="SVOD_IDJKids";
-pp[28]="SVOD_HOPS";
-pp[30]="SVOD_MBABY";
-pp[31]="SVOD_ABC";
-pp[32]="SVOD_ZAUD";
-pp[33]="SVOD_DORC";
-pp[4]="SVOD_DISNEYENG";
-pp[2]="SVOD_PCB";
-pp[13]="SVOD_Vivacom";
-pp[54]="EPG_Cinemax";
-pp[55]="EPG_CinemaxHBO";
-pp[57]="EPG_7/8";
-pp[1]="SVOD_HBO";
-pp[29]="SVOD_NGPL";
-pp[83]="EPG_TV_S+_2020";
-pp[86]="EPG_TV_M+_2020";
-pp[101]="EPG_TV_L+_2020";
-pp[102]="EPG_TV_2L+_2020";
-pp[103]="EPG_TV_XL+_2020";
-pp[104]="EPG_DTH_S_2020";
-pp[105]="EPG_DTH_M_2020";
-pp[106]="EPG_DTH_L_2020";
-pp[107]="EPG_DTH_2L_2020";
-pp[109]="EPG_HBO";
-pp[114]="EPG_Russian";
-pp[115]="EPG_18+";
-pp[116]="EPG_Turkish";
-pp[117]="SVOD_Cinestar";
-pp[126]="Viva_CUTV_7";
-pp[130]="Viva live/SO ON";
-pp[329]="vivabizexternal";
-pp[330]="vivabizexternal";
-pp[331]="VivacomBiz_LSOE";
-pp[332]="VIVABIZ_CUTV_7";
-pp[367]="EPG_CinemaxHBO";
-pp[368]="EPG_Cinemax";
-pp[369]="EPG_18+";
-pp[333]="Tests 1";
-pp[370]="EPG_7/8";
-pp[363]="EPG_Diema";
-pp[371]="EPG_Russian";
-pp[372]="EPG_Turkish";
-pp[364]="EPG_MAXSport";
-pp[365]="EPG_EON_BIZ";
-pp[374]="EPG_Nova";
-pp[366]="EPG_HBO";
-pp[375]="EPG_bTV_Pack";
-pp[376]="EPG_Nova_Pack";
-
-
-var global_hh=0;
-
-async function search_hh() {
- di=document.getElementById('mdiv');
- di.innerHTML="";
- di2=document.getElementById('mdiv1');
- di2.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
- var ss=document.ff.hh.value;
- var hh_id=0;
- global_hh=0;
- if ( ss.match(/[TI][PV]\.[M]?\.?[0-9N-]{6,}/) || ss.match(/[89][789][0-9]{7}/) || ss.match(/IP\.PN5-\d{7}/) ) { get_hh_s(ss); await sleep(500); while ( global_hh == 1 ) { await sleep(500); console.log("waiting...."); } hh_id=global_hh; }
- else if ( ss.match(/[a-zA-Z@.]{3,}/) ) { get_hh_u(ss); await sleep(1000); hh_id=global_hh; }
- else hh_id=ss;
- if ( hh_id == 0 ) di2.innerHTML="Error.... Cannot find household ID.";
- else {
-   var tt=new Date();
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                di2.innerHTML="";
-                if(xhr.status  == 200) { var sub_obj = JSON.parse(xhr.responseText); disp_sub(di, sub_obj, "Subscriptions for HH = "+hh_id+" <button class=but onClick=reset_pin("+hh_id+");>Reset PIN</button>"); }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req.php?uri=v2/subscriptions@householdId="+hh_id+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-   }
-}
-
-function search_ss(sid) {
- di=document.getElementById('mdiv');
- di.innerHTML="";
- di2=document.getElementById('mdiv1');
- di2.innerHTML="";
- di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-   var tt=new Date();
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var sub_obj = JSON.parse(xhr.responseText); disp_devs(di, sub_obj, "Devices for SubscrID = " + sid); }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req.php?uri=v1/devices/@subscriptionId="+sid+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-}
-
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-function get_hh_u(ss) {
-   var tt=new Date();
-   var h=sha256(ss);
-   di=document.getElementById('mdiv');
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var hh_obj = JSON.parse(xhr.responseText); global_hh=hh_obj[0].id; di.innerHTML="Found HH id= " + global_hh; }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req.php?uri=v1/households@hashedUsername="+h+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-}
-
-function get_hh_s(ss) {
-   var tt=new Date();
-   global_hh=1;
-   di=document.getElementById('mdiv');
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { global_hh=eval(xhr.responseText); di.innerHTML="Found HH id= " + global_hh; }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req2.php?ss="+ss+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-}
-
-function search_byip(ss) {
-   var tt=new Date();
-   di=document.getElementById('mdiv');
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var dev_obj = JSON.parse(xhr.responseText); disp_devs(di, dev_obj, "Devices for IP = " + ss); }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "req3.php?ip="+ss+"&m=GET&t=" + tt, true);
-   xhr.send(null);
-}
-
-function disp_sub(d, o, h3) {
-var x=o.length;
-var global_pp="";
-var pps = ['boza', '1st', 'Multi'];
-if ( x == 0 ) { d.innerHTML="Nothing found"; return 0; }
-var din="<h3>" + h3 + "</h3><table border=1 cellspacing=0 cellpadding=3><tr><td align=center><b>HH ID</td><td align=center><b>Subs. ID</td><td align=center><b>Name</td><td align=center><b>From</td><td align=center><b>To</td><td align=center><b>Prod</td><td align=center><b>Max Sess</td><td align=center><b>Max Devs</td><td align=center><b>Pack</td><td align=center><b>Status</td></tr>";
-
-
-for ( z=0; z < x ; z++ ) {
-global_pp="";
-o[z].packageIds.forEach(p => { global_pp+=pp[p] + ", "; } );
-din+="<tr>";
-din+="<td><a href=javascript:search_hh1(" + o[z].householdId + "); title='Get Devices'>" + o[z].householdId + "</a></td>";
-din+="<td><a href=javascript:search_ss(" + o[z].id + "); title='Get Devices'>" + o[z].id + "</a></td>";
-din+="<td>" + o[z].name + "</td>";
-din+="<td>" + o[z].validFrom.replace("T"," ") + "</td>";
-din+="<td>" + o[z].validTo.replace("T"," ") + "</td>";
-din+="<td>" + pps[o[z].productId] + "</td>";
-din+="<td align=right>" + o[z].maxConcurrentSessions + "</td>";
-din+="<td align=right>" + o[z].maxDevices + "</td>";
-din+="<td>" + global_pp + "</td>";
-din+="<td>" + o[z].status + "</td>";
-din+="</tr>";
-}
-din+="</table>";
-d.innerHTML=din;
-}
-
-function search_hh1(hh_id) { document.ff.sr.value=hh_id; search(); }
-function search_hh2(hh_id) { document.ff.hh.value=hh_id; search_hh(); }
-
-function go_otp() {
-    var tt = new Date();
-    var di2 = document.getElementById('mdiv1');
-    di2.innerHTML = "";
-    var di = document.getElementById('mdiv');
-    di.innerHTML = "<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg'>" +
-        "<path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 " +
-        "M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 " +
-        "M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-
-    var s = document.ff.sid.value;
-    var o = document.ff.otp.value; // оригиналния текст от полето
-    var h = document.ff.hid.value;
-
-    // Base64 encode
-    var o_b64 = btoa(o); // използваме вградения Base64 енкодер
-
-    var xhr;
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
-                var o_obj = JSON.parse(xhr.responseText);
-                di.innerHTML = "Response: " + o_obj.status + ", " + o_obj.errorMessage;
-            } else {
-                di.innerHTML = "Error code " + xhr.status;
+            if (val == undefined) {
+                return key;
             }
+
+            return val;
         }
-    };
 
-    xhr.open("GET", "send_otp64.php?s=" + encodeURIComponent(s) + "&o=" + encodeURIComponent(o_b64) + "&h=" + encodeURIComponent(h) + "&t=" + tt, true);
-    xhr.send(null);
-}
-
-function go_stb() {
-    var tt = new Date();
-    var di2 = document.getElementById('mdiv1');
-    di2.innerHTML = "";
-    var di = document.getElementById('mdiv');
-    di.innerHTML = "<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg'>" +
-        "<path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 " +
-        "M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 " +
-        "M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-
-    var s = document.ff.sid2.value;
-    var sno = document.ff.sn.value;
-    var h = document.ff.hid2.value;
-    var m = document.ff.m.checked ? 1 : 0;
-
-    // Base64 encode за sno
-    var sno_b64 = btoa(sno);
-
-    var xhr;
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
-                var o_obj = JSON.parse(xhr.responseText);
-                di.innerHTML = "Response: " + o_obj.status + ", " + o_obj.errorMessage;
+        function getUICulture() {
+            var fullCultureName = null;
+            if (culture == 'en') {
+                fullCultureName = 'en-US';
             } else {
-                di.innerHTML = "Error code " + xhr.status;
+                fullCultureName = 'bg-BG';
             }
+
+            return fullCultureName;
         }
-    };
 
-    xhr.open(
-        "GET",
-        "add_stb64.php?s=" + encodeURIComponent(s) +
-        "&sn=" + encodeURIComponent(sno_b64) +
-        "&h=" + encodeURIComponent(h) +
-        "&m=" + m +
-        "&t=" + tt,
-        true
-    );
-    xhr.send(null);
-}
-
-function del_stb(s, h) {
-  var r = confirm("Sure?");
-  if (r == true) del_stb1(s, h);
-}
-
-function del_stb1(s, h) {
-   var tt=new Date();
-   di2=document.getElementById('mdiv1');
-   di2.innerHTML="";
-   di=document.getElementById('mdiv');
-   di.innerHTML="<svg width='300' height='400' version='1.1' xmlns='http://www.w3.org/2000/svg' ><path d='M 120 100 L 100 100 L 100 110 l 20 0 m -20 0 L 100 120 l 20 0 M 132 110 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0 M 184 120 l 0 -20 l 20 20 l 0 -20' stroke='white' stroke-width='3' class='path'></svg>";
-   if (window.XMLHttpRequest) { var xhr = new XMLHttpRequest(); }
-   else
-   if (window.ActiveXObject)  { var xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
-   xhr.onreadystatechange  = function() { if(xhr.readyState  == 4) {
-                if(xhr.status  == 200) { var o_obj=JSON.parse(xhr.responseText); di.innerHTML="Response: " + o_obj.status + ", " + o_obj.errorMessage; }
-                else di.innerHTML="Error code " + xhr.status;
-           }
-      }
-   xhr.open("GET", "del_stb.php?s="+s+"&h="+h+"&t=" + tt, true);
-   xhr.send(null);
-}
-
-function sha256(ascii) {
-	function rightRotate(value, amount) {
-		return (value>>>amount) | (value<<(32 - amount));
-	};
-	
-	var mathPow = Math.pow;
-	var maxWord = mathPow(2, 32);
-	var lengthProperty = 'length'
-	var i, j; // Used as a counter across the whole file
-	var result = ''
-
-	var words = [];
-	var asciiBitLength = ascii[lengthProperty]*8;
-	
-	var hash = sha256.h = sha256.h || [];
-	var k = sha256.k = sha256.k || [];
-	var primeCounter = k[lengthProperty];
-	var hash = [], k = [];
-	var primeCounter = 0;
-
-	var isComposite = {};
-	for (var candidate = 2; primeCounter < 64; candidate++) {
-		if (!isComposite[candidate]) {
-			for (i = 0; i < 313; i += candidate) {
-				isComposite[i] = candidate;
-			}
-			hash[primeCounter] = (mathPow(candidate, .5)*maxWord)|0;
-			k[primeCounter++] = (mathPow(candidate, 1/3)*maxWord)|0;
-		}
-	}
-	
-	ascii += '\x80'
-	while (ascii[lengthProperty]%64 - 56) ascii += '\x00'
-	for (i = 0; i < ascii[lengthProperty]; i++) {
-		j = ascii.charCodeAt(i);
-		if (j>>8) return;
-		words[i>>2] |= j << ((3 - i)%4)*8;
-	}
-	words[words[lengthProperty]] = ((asciiBitLength/maxWord)|0);
-	words[words[lengthProperty]] = (asciiBitLength)
-	
-	for (j = 0; j < words[lengthProperty];) {
-		var w = words.slice(j, j += 16);
-		var oldHash = hash;
-		hash = hash.slice(0, 8);
-		
-		for (i = 0; i < 64; i++) {
-			var i2 = i + j;
-			var w15 = w[i - 15], w2 = w[i - 2];
-
-			var a = hash[0], e = hash[4];
-			var temp1 = hash[7]
-				+ (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
-				+ ((e&hash[5])^((~e)&hash[6]))
-				+ k[i]
-				+ (w[i] = (i < 16) ? w[i] : (
-						w[i - 16]
-						+ (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15>>>3))
-						+ w[i - 7]
-						+ (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2>>>10))
-					)|0
-				);
-			var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
-				+ ((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
-			
-			hash = [(temp1 + temp2)|0].concat(hash);
-			hash[4] = (hash[4] + temp1)|0;
-		}
-		
-		for (i = 0; i < 8; i++) {
-			hash[i] = (hash[i] + oldHash[i])|0;
-		}
-	}
-	
-	for (i = 0; i < 8; i++) {
-		for (j = 3; j + 1; j--) {
-			var b = (hash[i]>>(j*8))&255;
-			result += ((b < 16) ? 0 : '') + b.toString(16);
-		}
-	}
-	return result.toUpperCase();
-}
-
+        return {
+            getSiteTexts: getSiteTexts,
+            getUICulture: getUICulture,
+        }
+    })();
 </script>
+
+</head>
+<body>
+    <!-- begin #page-loader -->
+    <div id="page-loader" class="fade show"><span class="spinner"></span></div>
+    <!-- end #page-loader -->
+    <!-- begin #page-container -->
+    <div id="page-container" class="fade page-sidebar-fixed page-header-fixed page-with-wide-sidebar">
+        <span data-iris-parameter="area" hidden>Mobix</span>
+        <span data-iris-parameter="controller" hidden>Home</span>
+        <span data-iris-parameter="action" hidden>Index</span>
+        <!-- begin #header -->
+        <div id="header" class="header navbar-inverse">
+            <!-- begin navbar-header -->
+            <div class="navbar-header navbar-header-custom">
+                <a href="/" class="navbar-brand">
+                    <img id="vivacom-logo-img" src="/img/vivacom-logo.png" alt="Vivacom">
+                    <span id="vivacom-logo-name">IrIS</span>
+                </a>
+                <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <button type="button" class="navbar-toggle p-0 m-r-5" data-toggle="collapse" data-target="#top-navbar">
+                    <span class="fa-stack fa-lg text-inverse m-t-2">
+                        <i class="fa fa-th-large fa-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <!-- end navbar-header -->
+            <!-- begin header-nav -->
+            <ul class="nav nav-custom navbar-nav navbar-nav-custom navbar-right">
+                <li>
+                </li>
+                <li class="dropdown navbar-user navbar-user-custom">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="d-none d-md-inline">&#x430;&#x43B;&#x435;&#x445;&#x430;&#x43D;&#x434;&#x440;&#x43E; &#x43F;&#x435;&#x442;&#x440;&#x43E;&#x432;</span><b class="caret"></b>
+                            <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAzOElEQVR4nO19B2Ac1Z3&#x2B;NzNbtOpdlmRJtuWOC6644oJxxbiA6S1AQnNICEmASxw7kAt3gSPwT8JBcnCXEJoJTmxCs3EwwSWAbYx7k7vkIsmyurS7M/N/7828mTezK9ncrax14GeP5s3s7O7sfN&#x2B;vvvdmPPhavtLyNQG&#x2B;4vI1Ab7i8jUBvuLylSHAIzN65sh6sI8Muacu6VnQ9WRZkgOAHtag10OXz0DGYYT1PZ4xhw8vWQINXwH5pyXAj6eWdJc82jRAmgwdE4BgLiT6imasyB/dxNjY1ugOQAHUT4qbF83ABujSh5okffCv7x76BMar/3TyT0WAH17ZJyUh2HINJP0WHfp4AqDkPsbn9yOQlMzWXp8Pqqoi2NKMlqYmNJPFFGIZMJl8zmQZ&#x2B;mOLZhSXkU/6oxaWfv&#x2B;zlYcP4p9I/ikI8C9Xds/zhNUH9XDTXbqMVL4/MTkV3fpdhG59&#x2B;iO3sAhZ&#x2B;flISUsnukw1n2q8arR1o93a3IiqE8dRfbwCR/bvx8G9&#x2B;1F9qpJ&#x2B;VClR/8WSR1&#x2B;0aGbRCkjSzx57&#x2B;8gm/BPIBU2AJXO7peut6mI9HL6LbAaougeSUzBo9AQMGjcJBd17gdkAnVpv4unpmoJNd&#x2B;r0Bbqo1uf5A4ko7NYdhSXFGDRyOCNF7elqbN&#x2B;4GV/8YyMqT1bK5LC55IPm/mRG0fsypO8teffITlzAcsESYNGsrjdpofAvSOCWT7fTsnIxdtbVGDJxGrxev3mU6bYlA3iJar1EjDrVfHACiKKYb9PZcfT9aZmZGDtlIsZeNh5lu3bj41VrcLjsMH3rNA3aF4tndn2qMRx69MmVJxtxAcoFR4AlM3qmanLrfxFwFtBtnz8B4&#x2B;dcjzEzr4bi9ZlHcWBNAjCTL5uBHiWCRF5REVUY&#x2B;GY0SN8vkKG0b2&#x2B;U9umB/Tt3451l76GmusZDDMkPAx7v3CVXdl2wZMWxrbjA5IIiwKIrCgfraF5G4O1Bt3sOGo4rbv8u0rK7wAA4mlbrsMHnr0vsr&#x2B;44xgm2ESPIJhlk03XIrN2zX2/c9f0SrF39d2z42wZoutZb0/DpT64ouOfRv1b8Ny4guWAIsGh21wkK9OUEozRZUTDpqtsw9oprCSYeAxgGjmSSQBCu0TzwEzQ/ggQcbEYGDr5JHPb5dtvn82LitAko6V6MFa&#x2B;vQEN9I/E70ouEBCWEBEtwgcgFQYCfXlk4S9e1P5FmQiA5Gdfevxgl/YYQrKiZVmwCcBKIYoEf3TpQZ6A7ABe1XQDf8RnEgpjWpqRnCW7/9q144w9v4kT5Cfrq4h/PLMj&#x2B;2TsVC3EBSNwT4NHZXSZour6UNBOS0zJw0w8fR25RT3LtFWGhYCmG9rO2IJb/Vw0wHfW9KKZflwXwZRt8ljnIDjJQElAaJCYn4dpvXI2/vLqCBIhH4FFw3yPT81sff&#x2B;/4g4hziWsCLJmVN0CT5OXkiiempGfi1keeRGaXIkHbBQLQdUQcIPp/GPslvp9rO7EC5HUdItCS8RpMref7uM9ga8mIJEyX4/P5Me&#x2B;GOVix9C0c2HsQfh&#x2B;&#x2B;9/D0vGP/9t7JXyKOJW4JsGRBTrLUKhOzr6f5A0m48cHHkJlXCANQ9yJaAtkCxdBsHvyZEuHnheDQAlpyAC2afgcZJCOcZO6A/FdIbDJr/nTiDpbhZMVJJHilJ34wLWfjE&#x2B;9Xfow4lbglgBSUnyNg9ZFkGVff9zByu9LAn2ucaeolU1Mj3IEJuOX/zcCPE8Kt7eQ9EisUuUkgar0USQbLothtj9eDK6&#x2B;dgdf/&#x2B;0&#x2B;oq61XfB552SOXFfZ9fHV5NeJQ4pIAP52TP49c7Rtpe8Ls69GjPwn4HOCLJJCdbYsEMMFnDTuw003T7tZ2JlI7S6RIgruxkw8JgcRETJszBW&#x2B;&#x2B;vBw&#x2B;aNk1cvAl8sJMxKHEHQGY6Q9qT9N2Sd&#x2B;BGDvzauHVNsBxEMK0BEyo5ovlX0Q36&#x2B;2A/L&#x2B;VvPxcjBo/HBvWfIKMRHnGTZekXfXHT2rfRJxJ3BGAmP6HCRbFiseDmTfdBeoCzuFdzsVhAf4PQHOyRLgF0Wq0LYOGDcC&#x2B;XftQdeo0CjN9T08Elq8BwogjiSsCLJmbnk7y8m/T9uipc5CZW3AO79LtxQr6eLFHMzuC3Ms5ig77cyPWZxfqIsZNHo3lr72NJL/UNXtE2g/wWe3jiCOJKwJ44F&#x2B;oS3pqUkoqxk6fJ7yiR18Y4BDq90LEbwGvwQGa3s7ndcCYj9z8HJT26YYykhp2y/LeR3b9P7LETcdR3BBgyQL49LB2P22PnDyTRNNeRIBilXXN/WbnDmOBpfVmesfE7uu3&#x2B;v25VXBps63UOs6VILpu73O8X9chbg4ePgBl&#x2B;w4gLSAVzhyYdNc72xqfQpxI3BDAE86ZQ5Q3x&#x2B;vzY&#x2B;j4y2BruM4uNO/KtVM5LTKip2K9brYhAq/Z&#x2B;0T3oJtWIqq5N0&#x2B;wLYLoAhEcRsYmR3pmOoq6FeLooXIUZXlvIrueJUsL4kDihgAE6JsphH0GDYM/IdGl7S7wOfA0yud5Oi/nsuOESqCo&#x2B;fT4aNbAOi4a&#x2B;FHcDl&#x2B;z/85jbaugm4cY7dJe3XHs0DEUpCsDuqR7LjlxJvwR4kDiggBLri/IRjA4nbYHjhgDO2e3Czc67ce3qnbCgA6NV&#x2B;UEICVXHGAN&#x2B;4qysAIQtwBRSBAt&#x2B;LNWggsRwXe4A6PVlVgAr5&#x2B;4tWDIO7K7/5YVn39NAEu8wZbJxMh7PR4vikp7wwZSNPPuHjnB5/PBG7x2L1oAS1vFWEAcCyguostwWQ&#x2B;HuzBep4Dzhb/OtV7XnVZBkSXkdcnGsSMVIBZgOHkhmyxV6GSJCwIQzCZTyLp2L4WH5P&#x2B;2BTAvtmQEeTpgDuUQc3mubpwskv2yZcJ54CcSwGgbw8PEGEFoOzIIp1WwQYdBAhN8tGUVyNKlMBflRyuQl6p0Jzt64WsCmKLjUmrCi3r0sk24pe3OkTx0KJdkvgnWWofVsQN3kUaII4QRwBb47VoCIUDUBTJwzWcAa8I&#x2B;TbAKttUwtoGc3By2neBFykWF/tE7yls3oJOl0wnw/Lfgraph2oDsPDq&#x2B;kwPOu2JVE1Bb6w1LIBDAshgShKK8&#x2B;bIr0jcJoLssgZFGuggRlQTc/Atg8xHHwvfYBLEtR2p6CisO0f25qfLFO8qtPudOk04nQHV1Vqkka&#x2B;w8MnNynJpv&#x2B;XPR5xtCL6Jkab67L995pNt/6y5L0HZMEN016JpNDDEOiIgJLILAigOSkhPQ2NCE7GSZsj2dLKfRidLpBNBlrZQrbWZ2rkAAIcVzvsNa62aqyGoErIsXdscQP9aq0AjzAhCNAKpgBZwTRpwk4NovfF4U8y&#x2B;6AWub/EtOTUJjYxPSk6VMGIHgV5sARNLoRZVlBR6FV/SEjhe0odGs14&#x2B;niGIHkIsAVs7miuwjiKC2sd9pEaj2c3A10tbMtR5BArc1MF7zmhVOn0eikxey0MnS6QQgMKZRiPx&#x2B;v1P79TbeYNX96SIM4BTz/4h5AdHiAA62S9vpoqmR4JuuQzOXSO3XIrTfTQp6rNejsLPzyqAESEInS6cTQJP1APXlPhIaO/L8qL4cAvh6JPh6GwSIiAN0F&#x2B;hc67kbcMcCxn4LaC1S&#x2B;y0L0RYJTNchKcboY69Xp7NY/Ohk6XQCEAPeTKEJBUOwOnRE328quq35tOhj5vx89C4nzNksgFgUilobEH2&#x2B;EBdw088XM4W0NZ&#x2B;SQTfJIB4ThQyq8RtDqkR&#x2B;8NcEIODq9RTXUKjFJoAZ01kar8Gl&#x2B;e5JG26rEcUCuAs67gi/raDQBNo2/ZwIugC05mxHcwuasQ6HQ&#x2B;R0daia1oo4kM4ngKbXUwDVcBiqGoLCR3Nxb2AFcuaIX0vzeVsIFoVxeYbowkokQRtpXhQSGMEeWZsLbWtsvxodfFH7HaQwllAoxE4pqCJIVp1Ogk4nALmMZYqJV3XVSeTkFrjifpf5dnT6iMWfaHEDfz/s90eLA9rx&#x2B;ZoFvOnvNSEGEF2CZmu5TQSn9tPtxsYG9htqG1U6SvhrAoQCDfs9rSnM6NdUnUJWdh5JCXWh3CvO0m0n&#x2B;Is6MZSLy/xHdAOLQSAP5lQTYHNtar0WLRh0xwVRNN8gUxjNzc3sLKvqNZr/N6OTpdMJsOR/0PLz67WjiiSVVFeeRGnv/kYIwFJ7DpJi&#x2B;3zuCtzBn34WArg6c5yuQHdE/7oZ4YvgG5aAg266BN1eNH6swx2oDpdQX9dgFIfIaR49rdJbj1Sik6XTCUCFXKO1xPeXlB89xC4kg1EySr00YJKsSZtm8MfHBfA5AXwCR7sWgH2TuSm6AJsIDs12EYADL1oF0SXY2QDXdqEoZB5zusqYGxIM6037Tqi0J7DTJ4vEBQF8XqwkV&#x2B;rG4&#x2B;UHWZRMe4Q1FwFkWbAAltYLcwF5h1GU8kFkHOByARBSOMGEc63XLAKI4KuIiAWE&#x2B;MA2&#x2B;7bLqKqqZL&#x2B;lql49RA6h/r8GnSxxQQA9rH8gyZIeCgal48cOobCoBzP/EgGJrmWaNtEiCp3CJRlrgwSaKwNoa7y&#x2B;LhDBdgVRUzZNtAK25usOiyC8bsUGttUQMwZuFdSwitOVhsIfqtTKyOowOrknkEpcEOCh15oqfnptYFPAKw3fu2sr8gtLWAcPA5xquWykfhx8tjb7C6QvaQF4SZZ31YqdOtGtgMsaOKyC6ArM7Yh6gbFUkgA3GA7SM1HX7grvIidzCHEgcUEAKnpYekHyYviBvTsw&#x2B;tIp7EZPzArwUcEi&#x2B;Ax4w/wbim&#x2B;QwA4DxN5ADr8NvNEUfLTbEjhMON&#x2B;2gzwn&#x2B;O2kiUJcUXG0nJ1VRY22t7pRo9H/PsSBxA0BcuSmP9brgadag82BPTu2oP&#x2B;g4aYL4MCLFsAYL2BMy7ZJIEUJAq0R&#x2B;ma/PHjHDNoCX2/DCghxgB4JvqNQ5MgYNJL7N&#x2B;LkqeMsgP3isLqFfDnZwCnEgcQNAe57Aw0Pz9PfyEqWbtm6eQN69x8MRfGQayYZgSAnggg813xXH4BjULDRMrdt4GFpvzmiR3ORwW0FohBABN9RH9Cd8cHBsv3s8xtbUP3RrhDV/C8QJxI3BKBC3MAiAsD1DfVnvDu3foaLBo8wNV43iSBqvWzdmMEw/9JZskARfBb3O0kQ4QJ0E3Te928XeRwpIgffShN5EGiQpaG&#x2B;DhXHjrGMZmNZ&#x2B;GMz&#x2B;o&#x2B;b28nFFQH&#x2B;/a3mIw/N9b&#x2B;VkyrN/3zjWnTr0QeJySkOv28Hf0YhiGu/bQXYlrm2UwJdb8MKOLKBKPV7Tbc1/qw1AjE1NIiwa&#x2B;dO9h1NQdS8tyW8jXz5RrI0IU4krghApbJR&#x2B;XZ6Ung6gi2Jn6xfhQmXXWmD77AAzjUXJxFs4M0N6HBmAYgaCEa6ARt4rvVCVTAiSzCWcqL5NaeN1O/D7eH3wob2r0ccSdwR4MVVTRX3TPU90zMfjxw5uBd7dn2O3n0H2/k/13p38HcOlUAbfLiCQRf47v78iKwgkgBOl0BMf0M99u3Zxbh5vEbf8&#x2B;EOdS/5srVkaUAcSdwRgErVyuCijPneuVkpUr9Nn6xBdlYeMrJyDbMvan&#x2B;E&#x2B;W&#x2B;vL8DlBkRr4I4BopJBqBNYWh&#x2B;lYESWsBrC9q1b2DqoounVteF3YJR91yHOJC4J8AagTtyDG6YM1dcH1HBgzerluHzmAiQmpthpoASX&#x2B;ZeiGwGxDsBWovk36gF2StiWC9BN0IWAUHQJYlagqti&#x2B;bQsaGutZkfK9z9W/lJ/WasmXvI04uzsIlbgkAG5B4VpVX1KhI/BNstncVI81K/&#x2B;MSdPmI4HOHI4I/uwMwF0LsOsA5lZbwWB7hSEhMxCzgYgUkYC/Z/d2VFeeYmfxIeHW2p4Yq7Qo76tl6gHEocQdAZQblRkIS78nsOSUkT9LySleJ6uoq6/Bh6v&#x2B;jEsnXsGe&#x2B;CFqf/QMgEtkJhBh/tEWCdooDLkJYJr&#x2B;3QT848fL2SlshYL3wkThk6QSXIJnlUsUVX1FfRlxJvFDgG/B66n3/Su54N&#x2B;HieIl/Ybg3vk3Afs249RbL6Outhp/W7UM4ybMQip98geEYNA2AU4RikE8&#x2B;DM0nweFmtE2u4attFBzWQAhHnD2GaisB3Pn9i9QVW0U95L7D8HM2bfixNvLsGoju0dkEjmxPyrXyZerjaF78dbXaaBTbkCGUu9drtPn/IB2D3tx7&#x2B;zbMf/S6QjprQhmZuGLE0dQsHkdmpvr8eHqZRgydBy6FpfCSYK2xQ1&#x2B;tI4hRJj/ti0BtwKNjXXYsWMLmhobmEGqK&#x2B;mJ/tfchwRfMn5y8/cw7qLReOL136ChpZGe6q1ykvcS7TrPVLzWfBRxIJ1PgOsCRR5dfY9c6/50s3tuMZ745mPo2bWERNAtkDUZ247swu60TEy580nsf/mnCDbU4LNPVuPUyWMYMGgkPOYTQtrPAWCngG3WAkyCUA3n66ixgEGIiorDKCvbzR48RdFvGTUUG5CKfetX4N7L7oBPTsCckTMxsnQkfvDCEmw/tIOeY19FUz9VrvVdHnw9uB2dLJ1LgAW&#x2B;/oquEfClIro5qvcIvPCd3yDB70NQa2F&#x2B;vvzMcTzx9q8w4qKp6DvkCpT0HIL1zy9Ebdk2HD68BydPHEX/gcNRyG8lG1WsVMAZ/Dm2tXMuDNXX12Lfvh2oqzvDPkNKTUTSndOhZeUje20V3tm4HL1ySzF/6DxGgl5demHZQy/ju797GO9sep&#x2B;eZhdVw3rPgsDM8BvNa9GJ0mkE8C3wDVRlaTVp0knzmDtyDp6/51esC5iBTzSqtqkWi978KRsMQmHyKT5omXkY8tCzKHv3RVS8/TJaWxvx&#x2B;caPcLBsJ3r2GoTc3MI2eGCbfvY3Wi3A1PqInkLTElBzf&#x2B;TwflRWHmfb9Gu8I3ojcN0kyGlJSKgLk9DPi4ykdDz3t/9C75w&#x2B;GN19LDnvBOLWEvDS/f&#x2B;NH728BM&#x2B;t/C0d2JRCPv8Dz4IEQoKWv6GTpHMIsCBQrEr6O&#x2B;Q6M/DvmnonnrntlyRv1izNp4HW4rcexfG647h&#x2B;1A042twEnf&#x2B;TZeTPuh6Zl0zC0aXPo&#x2B;bzdThTU4mNn65Gcko6uhb1QH5&#x2B;Cfz&#x2B;gPWVYjrIQRfzf0dbAF8lAV5V1UmcOHkUZ05XW5&#x2B;jFGQj4bqJ8PYvtn8XSfzpe35&#x2B;1aN44PUfYNHyxXjtjqXonlnKLAElwq&#x2B;&#x2B;8Qy6pOVjydJH6Tv85PC3vAu8Y0NvhLagE&#x2B;T8E2BBco4CdTW5WF3p5vXjr8FTt/2Cje&#x2B;k2iPJRqXvt&#x2B;uew&#x2B;YjGzG1/&#x2B;VYeOm9&#x2B;JdVv0RzuAmyz&#x2B;7392d3Qc97F6P5aBkq3nkFNZv&#x2B;jgYSH&#x2B;zetQl7dm1GSmo6MmgVMSMHyclpCPgTjcFD7QSDoWArGoim15KM40xNFVnXsNyfCXmvUpyLhFmj4B3S09EHQSUU1JDoT8DwopH4ycxFWPLXxVi04sd47Rtvwq8E4JG80KDih/MeQENrPZ78y9P0MxM1zbMGC&#x2B;TheKN1P86znF8CzCDXAdpfya/uyTaHXo7f3PUUuyiqbtw5Q5YU7Du5H/&#x2B;57tfomtkVj816HD6PFwWpOahqPI18Xy45aedpB4pKUXrXIrQS01y17n1UrV&#x2B;JUM0p1NfVsOXIwd3sODoFPZCYRPJNH2QP&#x2B;RSyTTU9RPL1cDiIlpZmhEPByPMmWYlvRB/4RveDp28x2pK60yEUpHVBgpKI&#x2B;YMXYMuxL7Bi25/x&#x2B;09exMJx3zN/Z5iVjhdd8xBqCFlf&#x2B;OAP1B2kKaqyRr0hbSBeqT2vA0XPKwGUxERi5zGStkf1G4kX7v8NGyWjCZNCg&#x2B;FWPLjiPjaJ4sk5zyArMYe4hVaMyL8Ynx7ZgqszriB2wseWEJxg&#x2B;XPykXjZPGxUktC1uQ75G7eiad92eLKNz9bIxW9srG3/JE2l1uoJLt4ceK&#x2B;chq2yB8l5fvTvldzuW6vLVUwuHExYngiv7MOj0x8nVuwz/PKjX2BSzynondfHIgBdfn7rYlTVV2P5P96mJChU6oN/IVdiItoY2toRct4IoFydfB1Rt3voT8tNy8Zz9z0FxSNb4PNf/OSax7Gveg/uGH03JvSYwsCnVmE0Mav/svrnmD9gFrnACUhAgOoT0youLcEgln38AUoy8zGp1zQEL56OtX1uQdc0oGcXoDmFLMQLhEnWqCoEZHPSkSdMzi8EJDQRa9JA9pPgfl05MODF25A7fgx6hUJYuWs9tq2tx6BLUyNuQ0SluVFFQ20IQ0cMhV8OEAL4kZKYQUj8K9z8ygI8&#x2B;NZCvHHbcijE6tDfrLI7oOh48o7HsOPwLuyvOEiiXOlSeUbiz7R3m36E8yTnhwDzUnoT8H9L1YtegF8v/AWy0zKYNohTwb&#x2B;o2Iw/fEaj5954cOLD7HWv5GOmuyC5AMMKBuPjwxswsccYcvmMfpUWNFvtT3duRVYgHbP60OdGq/BnBnDREwtxaPHzGK2G4KsjB9Wd/XT/3OxBzvj&#x2B;KJp9GSNfkkfBgsGzsPTzt3F0XzOKewci3nN4Wysm95xEvj&#x2B;Hga&#x2B;Q91Fyjuo2BreMuB0vbXwRv177NBaO/45FALpOTEjAc/f/ErMX34Dm1mZIAekhz4zk1eF3G85LZnA&#x2B;CCApEgFfRwrd&#x2B;O5Vd2FE34tts8&#x2B;O0Fll7d9XPwpFkfDzK56ER1EYAYy4QEaCnIjbBt2I76/6MSNCUkIyGxbmJf&#x2B;IB0dzsAVbDuzGA2NvRqI32TKzvW69CuW/W4G1p49icubZLWt5C7C9VsOkJ35AfHkSIwAFU/F6MJdYnxc/fQWFPRKI9bLNQFVFEHVVGq4YOpv5fzrcjJl6E&#x2B;TvTvwB1h1ag5c3v4C5A&#x2B;chj8QJ/PxUspQWFuOx236I7z/3U/pxiu7R/4jRKMWGjp872OEEUOal3EKuyATa7lfSG3fOvCFC86m8u2sFdlXuwFWDr0Xf3H4W&#x2B;MY/mf3NCmTihgHXEJ/6Wzwy&#x2B;X4ke1NIFOBj2nSq9gxykrKIpShk71X5RE5Fw5D/eAR/n7cQQ1NUpHvbP993a33oeccc5PbrzwjGCUDX3TLSkEVyfAp4XrFRfWysVbHns0bcM&#x2B;I&#x2B;dj4cdDY/wGx7FQ&#x2B;&#x2B;N/EhfHf5PXhm7RN4bOa/2wRgx4QxZ8w0vEWC14&#x2B;&#x2B;&#x2B;AdBRcqXExKf0dD0LXSwdCwBFqRmEuV8gjYVkrsv&#x2B;cYDbFCHrf0GvE2hJvxuw6&#x2B;RHkjFN0fdyy6KVZhh8wIMAlBApvS4FEfry/HMx7/Dg5fegxRPGjveo3uQl5TNtJZrlgaj67Zk4kQUTZ&#x2B;Ales&#x2B;xjU5oTZPd2sdHbXhw6U/&#x2B;b6l/bJFAg9b5yZ1IanmIdCbe9TXhLF9bQNm974Sg/IHmqQ1fp8GflOJMGuP6T4Oo4k7&#x2B;KhsNTYf&#x2B;xSDCi62wDfON4wf3fIdfPLIFhLLtEJK9XwDY5KexfrGDq0PdCgBSGD1M5iVvgWTZqFft1JD&#x2B;7mYOfmrm3&#x2B;P081VuHvsd5AaSDEvpGz3zJELbxCApooKbhl0DV74/CU88u6/4oGJ30LflL5Es9NJWudDQEm2I23w4dkaxv7iUbw&#x2B;eCIOJQHdEiPPlaTwWFXnw4h/ewTpJIikA0&#x2B;o65FhaD8nQaInEXWqjpNHWrFnYwOJN2Zhep/p5ndqbRKAnsPCcQ/gjqWf4dl1z&#x2B;BXVz3PyG1YAsNi5Wdn4&#x2B;45N&#x2B;LppS/Sa&#x2B;ORk6UXyGkN60iMOo4AczKLdF29gzZTSO59z/wbjYhdHJ9B/lY2VOPNba&#x2B;hKKMIcy&#x2B;6SjD9srXWzL8yZIsIdwy5Cd3SS/DE6t&#x2B;gW04x&#x2B;mT1xL7TBwwLYJlh1QLFX9oXQx9ciHef/U/cndgaUS1ed0ZGoKgYQ&#x2B;&#x2B;8k/h3r2n&#x2B;De2nbQo&#x2B;dQVbKrailaSqCV4/7hxxJ4YVDrU0n3UVCwSg26pAgK7kN145YB6Wb38T7&#x2B;95G1P6THVYK3rsDdNm4/XVb6Oi6hRJSZShGBK4Gp83/6mjYOowAhDAHiI0Zs9zv2bKDCQG/ILvt3vl3vjiVYS1EO4YdTe79Z9NAMV0AQQEnRNCZhdTNteTiEml9YHVhz7Csh3vkM8JI0Q&#x2B;y6/4iQYbj5LXBGDGPfwj7HzhJWyqbcXwNPtczxCvsP6MhGte&#x2B;zUS/Wns85kFMOceaOawsZAeZOD3z&#x2B;uPO4ffjiR/omVt6BmKwNsEsF0RNfnXD7sZa8pWYekXL2NCz4ksAObH0PfTSuitV8zD4//zW3ZuUoZnMblWb6KDagMdQ4D52fkIq7fTJk1zrrl8ujPqh3EjoDNNNVhz4AP0IUHf8OKRlunnsQEHnft/2hbXlAqJPj&#x2B;uJCZ4Tp8ZqGmuJSQIEtsp2xNHAMuUe0hIMuXJp7Dy7m9hQArRYvPekqtI4NdrxlT0nDzVrPUb386A04wW/dsSasETJIBLIRkI3Ra1O3ItTBQ125QASb5EXDlwPnF7L&#x2B;GjAx9iXI9xFnFU0x3MGDMeL65YhpPV1ZCSPQP0iwJXYUfHWIEOIYAcVL9LEGDJ8txJk5GUlOCI6o3HwABv717OtH/e4KvZD4cJOl1LVvBnm31qFSwCsJlCivmKMWEkjaaGBOywHjL26cLYQdPo97/xWnz29FNYc2Q7pmepONQE7K3XcNcv/4O9j4NPxRouZu7zeBQkKQHjtzCQdYfpj0oAmINGhaxgat8ZeGvHMqzY8SZGdbtEiAUMd0BTzBtnzMRTL71knHuO92EdzR1iBWJPgInkMyXpFtqkF3/2xPGG9rvSvoZgIz7ctwrFmcUYXHixRRDJBNz&#x2B;a5t9BxHoKCB2UTkBmMEGrG0VkrXtJMFlzz6Dl8ddhmEpwPt1CRhBYoPkbjR9DNngQxg0AnsqmQi6brV1B/DGdtsEoPED9f9/3bkcG8s/xcWFQ1xpoYopo0fi2aVL0dIapFbgYj3XMwqnwjG/vXzMCaAk50wlF6ILbQ/s3RO5WekWuLZp1/G3/StZmXdm/9nsAqnmq5wARvRPwVdM8J3&#x2B;n943QDanikkm6IwMumRPIKF/dWEGkUmAnOEXo&#x2B;818/Hsq28gOTsRIx96gGg/z070CPCt87ZA1x0E4IGmCLy4X8xIeHtKn2lYte89vLNzBQYWDLRiBJ4V&#x2B;P1ejBsyBB9s&#x2B;JRdVrkwcLd2qj7&#x2B;CUAuwq28PXXsSGbSLDHTvtZwC/5O8uG8lFwM6zqMlXL5IE2LAJLMXAC3BAb09poDLkO2CGA9yVu3acG&#x2B;1kEC40TG/Nti7CAEGPXYIkhJfqb97PzBxwqIdBXGC0RoPY8RtCjARyOAYQloADmux3hyHf6GnSe3s/K3SAB63S4fOxwfrP/UOOUMz2QYt5c/E0u8YkuAKRk0tr6SXmCf14NRwy6y8n6u/zQA3HjsUzSFGjGt30zm/wwLAQY0h9wZALJEzGw5/b4G4y4ikgmw0abfaJCDi2gBaDuhSxau&#x2B;PMf0H3GFIfpj5hFZAFubImgw4SemXjLKkQD3nQDvDZgAj2p12VYf2gNPi77EKXZPcwCmJ0WDujTHTkZGaisOUNTwq4oCczE4eZXYglZTAmg&#x2B;JUJui4l0Hbf0m7w&#x2B;xQr9xc16bMj/4Df48fQouFC0ccggM5uCxM97WPaTi8gT9FEzRfaMIM/DYLp18XxG0ajaMZE1o8Ax1Axfkw72g9YYNsWQHekg2JaKGYCIgHSEtPQO7cv9lbtQU1TNZIDKVZVUDN7Ogf1K8XqdZuNs07zzCPf/ap1sjGQmBKAgH8ZP7VB/bo7I3/jCJxsOI6KumMk8BsCn8dnHmPm/GwtQzL1nvt/h/k37xvkNv8w4TdmDcnG3eRcQSC/k2i07lwReOOvGLMIU8gsMnDQxWDQnQ2IMUEkAWhrePEI7K/ei80VGzG2x3iLALqZFg7s2w2r1xoEQIpnIPmbR5YTscIsti5Alybz5oB&#x2B;xewHGGkfTCugYPOxjZBlCUOp7xdLvlzLdVp21QQiuHJ/AiIP/jRzn2SSQbMCP/v&#x2B;QW7TD7MVee4i8Lxlblnab&#x2B;YDJuhim2t9tBjAnRaKwWCf3D5I9idhS/kmkhKOMl6HnRJeRK6jxOIhohJJ3hLdg1JitOKQAJfl5hECXESbgQQ/SopzTP9vFH3opQlpQew8sR3ZyVkozOgaQQAGtJD/S&#x2B;BEsP2&#x2B;bJHBaf41oQ0rGxBuHsVECAqjiBN8c&#x2B;2qBdgZACxw&#x2B;T6jRcEz1k4LILoEmwD0VAYWDiJu8RMcPF2GosxiYdSQhtTUAApyM1F&#x2B;4jQtryagMHESDjfFbJZxzAigeOVhum5c2cL8DPbDJT7o0vy3t3IfG/V7ScEoo&#x2B;wJOAggO6yBCDYngiwATUvEQspnAs4dASw6RCdBdNEdf7m5FwmhOVyBWAxqKxsQS8ROK8CPGUDSwE0kMN52/AsUZBRYHUvcEhQWZKH8uPFoISlJGa7b98r9P0vMCEA0tC9v5&#x2B;WlW8UfS4NIe2/lTsiKjL55fS0/Jws1f6r53P9LZjxg&#x2B;X8z0hf9voZogaAAuEUK0Q209xvsVjTwbf8vZAG6kwCW2XcALxSEeCYgECAjMQNd0rrgUM0BtISbmYsU6wJd8tLtMw94aY2FPnGsPBa4xc4FEHfGT5KesF38UdjfUDiI47Xl6JKShwRfgsv8i1ov&#x2B;n&#x2B;DCHbA5zb/POxzBYHCmlkhVw2gbXFWAfkeEXCjXsHNvq31Vl3Asgxu4HVnLCAQgO7rntUDVY2ncKTmIIozS6yqIH1Ply5pVgALv0IfNEWHucYXASRN6sfPMTcnxVH9o2AerT3CJn50yzKyAw6mHTgZXa/GPsU2&#x2B;&#x2B;QC0KDPdgG2xnNrwHN&#x2B;jWm8TQjnvGF3IBgpYgzA/vJJJC6LoMGePSSCbq&#x2B;1iPqAFhETOAtDJQT0Tcc&#x2B;wWFCgMKMQke8kJ2bbGcwfiVHNwgQE4mdC5BQytuBJI8VFVMVpN25R2sOs1FBRWbw5ySACb4uZANC2sfMP4xikGjytYi2S/s52CYxDDkHC3DWWoDuBN1FAM1hFaIBbxNANS0B7WHMSEwnKXI569HUzXGS9JhAogCTIqfCp3Sh956JhcSOALpk9bB7EmQLZHrh6I88WX8c6eQHJpGUh74muwhgGHx3uqdYawNk0&#x2B;vr5p1DAatNxVEMAiJIwPa1g3&#x2B;0WoAYAUDn2o8o4GuWtreVDkbTfHEQCR0wsvvkTpxoOE4ypWyLAD76XDVdYLBXKkCU&#x2B;Sv/G4kVAcgZStYz8Lw&#x2B;yQTZGHhPJz/Qen&#x2B;hGeHaaZ9ipX2aZeqNLl/W1jWTFJqg6UIWYGm7EAS66v7udfsWAFbOz5ou8MV/4EGfCbpxXGQG0H7fgBgYqshPKyCB8i6Uk1gpIynDShfp9XQ8DsfjyYrV7YZiQ4ApPVKh25T0mRaAA32q4QSLbHNScq1BFAoDWgj&#x2B;zCyAh366YO61KOY/Wu5vEUIggZj&#x2B;GWXi9n&#x2B;KGAdYOYCjFsDzf3ufsxrIA8PopWExO3ATICWQggAJkGkwyDuEmNUjKNHh8qpqnptPan&#x2B;K0peQ2BAg3JrCbunOP9QLBwHOtJyGV/EyP2f7f82I&#x2B;JkJ58Gf4P91zUz7RPMfvf5PcWCxAtyaH0mCs4sz&#x2B;ue&#x2B;H8K2Jmi8MxvQLS13p4ViVhC1Qmi2M5Myibs8gcZgPZvDyEvCXq&#x2B;HPVmNiVemw1opdv9nMxAbAnj8ROXtc2Hj8mGUL0OqhqZwE/thfFiYZEb67OLxMX9EazVJqP1LxogeEXjN6vUzagP8s8QgUNT0yBrA2QngtACR4NuACwmiUByKKANDbxN4x8ARti9M4qQ0VDaeRE1zDbKSsywCMBfA3YDBPzoxIU4I4BJjYoZhzmtb6tgDoFIDqfZMH0fwZ2q9QARmEcwqX5ulX7EL2BX4RSeB8aookumEnCIEgHZUaJl41hY03j1GwAm6kAq2A7zVUUTWKQmpzF3Wtp5BelKaTYBIiQl2sSOAEKSoVo&#x2B;WjvpWQgDiHgzzr1rAS1bwJ1t5PieCpIulX7voIzvAlpxWwFX1iwz&#x2B;3BZAbDuBttrnoP1RQYezj8DYEz0ddJeI/cR/0unwDcEGYaKJZvqkc3FhX05iQ4AWsigiAcJsvj89a&#x2B;rLPIrMxsHZ1T8TZMn0/wIRrLUV6csWAYz7g9tkcOf&#x2B;NiEEsy8MDBVFJEOkFYgOPt9vAQ6eGprWIcqYwbZ6CSMqhdxNwAgG65prjZtkybJJADETkBEr6RAXoJkEoD&#x2B;G/ohEfyL4wBDDoyuCaTfjfm722y39ugo/QmeQSAggkgRsLZ1DDNBGt7C1T7eGhDg03NkWSsPtBIN6lKyAzRj2JTLL2RCqR5IvyXxvx0iHuIBgKASfLrHbp1F/Zmi/akLtHPNnWQK&#x2B;hgbR74tDvqJlAdzcc0LA4QYMiRYDuANChxVw1AL4q9FHCdv/bNDtMrFqE0CMB6KOGLLTQuoGFHLdguEWdu2Mp44hjl0AFeHkGhtbEUiR0aq2MgJ4PB7L/Ed0&#x2B;Vq9gOLIn0jzb4MsBn9RgsAoo4AtOnCM2x8S1C749h7Nshaa1XZqvbsc3G5aKJBB9sjsutHxE/S6hcIqybR16/fE0hzE0AXYF7XyRAsy8rwkBQwZBFBk2/9zbRfy/8ihXkZnkJ0Ann38n5jxtxcIsu0omhQ1DhD03TlINMo4QauXUHNpfWQfQfQSsZ0V0E&#x2B;i90cIM1caRtWpFgCx134qsSFAYnI1mhqtzfIDjeg5KMAGXNL&#x2B;fwquUQGUzCFfwuBPM&#x2B;0Ta/469&#x2B;aUEJINPieDs&#x2B;s3ygAQq/OnbRK0Jw6fz8DjW7pjnzUmwLIQmqNtmPnIwSG66A6EEURiQcjrNRSIXrfjR5qcWh9WWxAjiQ0BVm5txNjSE&#x2B;QyswkhZVubMG5OmP1IOk/PCAAF/2/5eNv/y1bNn0cBZoeP2RPIikICGcwnBlmEkODSfIEEgJMA0cjgSP&#x2B;stg0&#x2B;389DQIjaD7tzKLI07K4QagLwQlYguAZKEmNmskSwDuLAtgan/68P0rkBMekMiOGAEOkzcsazabOqgrD2MHEDhZKl/eKYP6btpiWw0z6xy9fs9xMGgNpkgCMOEGv/3CoATkrA1Wpb3J1AsGKDc6sFIArodrzgrBBGB573LNLKOv09raEwUSjBBYTC1SQ6pLeOicntY2LXHSzLK4hJn823N35Qhxm3ZzBIHQGgbjz7xyKClfa5unzdhSCTDKKpF82/OCrYkf5J4p5zGxBi9wq7wTe3BMDtvgHdAl1MEXldoL0&#x2B;AodbMGMF&#x2B;lxkOn5i67pGhFoE&#x2B;98YpA&#x2B;eoE8ej68xgZD8b0Jr/Q25vmxi/r5NrRhyeQtyu/rA0z6m7W4iQOzyFWcA2dF/5AAQuw/AkQa6tN6yDhBrAGe3AKwlRP3OqIAHhEIKqNva7ywGubMBoQbgjgcchDBIEQqp2Pheo&#x2B;Oc9erGnWR1BDGS2BFg7bYafXjpO/B65tJNWr7&#x2B;8JVGXPV9ems4zR7yJRBBHABil361NvJ&#x2B;1/g/K90zrUBEKZhLW&#x2B;MCIkV3EUDsGYwEX6wFROsZjCwGObIBdybgygooATa&#x2B;34T600L6F1ZP48SZQ6S1FzGS2FYCZf0hMDcgsckAJw&#x2B;EsWllC4ZN81sBoDXSB07z7xjrR7MBdutY2QJWdmi8MAkEgltwDAB1OANLudurBoqdP5FhoS6AHRkP8Iwgshjk6hOwtD56WshfrzwWwqZ3W53Rf2UtnQ9QT5YyxEhiS4BPD&#x2B;zFoB7LEfDNt3b9JYisAhklAz2wR/jwQR&#x2B;64PftGj93D5oV/IlFINv8O/N9dyVA9PqCPTjrgBC&#x2B;dpeCeeqnu/aJrkDQdAH0aEPG2hosQo9rbtCx8vlmaGGBrGG1Gkeq6R3DNiFG/p9K7PsC1OA3oXomQ1HoYHZ20T54sRVXfFtCXg/q31WBCLzq7yr9Qsj7hTF/nCQwb/4gzgRurwbwvx0PYG/b6SD/J&#x2B;7T0PY4QTtF5KbfFQQK4waohIjSv/dsC2or7fNmcrTyLWgaDQj&#x2B;gRhK7Amw49hp9Ch4ENlpv&#x2B;WuINgE/PWZVsxc6Ed&#x2B;Lz4R1CZCZOlXNPM2GUQ3EWkBBBvQRg3gyxDAYQEiagGiS3BvO4tBjmqgFReoDmvBJUii/Xd&#x2B;1YITZRoc4J&#x2B;p/wdOnTlMWvT2sTErAlHpmJtEHah4kejrGGSl3sF3BZt1vPV0C8bf4EO/scbtOjkR6DWwRwJHRv8Oy&#x2B;DK&#x2B;Z3j/6KXgrl8OQsgbEeUgWFpuWUjRO2PArpYDdSjWPDaUxox&#x2B;62oOup6rSV4EPvLV5HWIRgPno6pdNx9Ag8cWwilOB/pKTP5LjUErPl9iDF8zNV&#x2B;&#x2B;IUbNnJzacwZFItArvF/gCMIhIMoxjb766gBfPk6ukWEKOmgqO1WRNDOOMFo2i7K/s9UfPRSkFkAh&#x2B;YHwyew98gbxPTTe9wvQ0y7gQzpyDuFtmDfkZtRWvQKMtKmiS/s/ljD0W0tGHudF6XDlIg3RiODPfEz0vxHBoGAWAP4MkRwgNQW&#x2B;Cao9rnawaBYCraDxehSV6Vj7ashHN7Kh3wJ5xcKHcfugy&#x2B;hNUjvb/46zuk&#x2B;519eOvpm0adRdvRmdA0/g9zMBQQI6/saa0ik&#x2B;59B5HaTMWKOF8UDo49ysWvvQu1fh4MQ9vbZTP&#x2B;5WAJ3LYDvdaZ&#x2B;4j73KOGzSQPJ7T9/L4xdH4eZVYyQ5pbd2H/oL8QC0CeN01vCHEMHyfm4XXwljh2/n/yoo&#x2B;ja5XZ4PI55bacO6Xj7mSCyiyX0G&#x2B;dBr1GKwzWIYsUMxoYTcBcJAAH4c6gBOL4nytiAtsA/F8DZ8YQj5Xs07F6romyTSlI8IAohVZw&#x2B;8yEOHqX5Pn26KNX8w&#x2B;hAOV9PDKlCdc1inKnbhZKibyAtZZyV2/EDyM/8&#x2B;HAYG5aGUTxIZhah6CIZyZlnq9wJEHCgBY13WIMv6UHd4H9ZCQeBCgL6sZ0ayjZqTPP5eUVIa/AIjlb8FXV1NAGsAH1scozvCBZNzuczg1qgqr/HgUM7kJJyHQryLkdi4gC4rga9aAfIxaILlYwCibmJ7BKJWYn0fAmJKVK71tztt8&#x2B;HBElyVntSR/URHVVHNLacPKibmt6OhMPVRDn&#x2B;jorjWwFm3qj2/x3n6VHz5/uxcRSPz1Bfvwd76jcgNXUS8nLHICmxv3V3Z5fUVNBFw5719j46VSo5Q0JSOhBIldgj56jbkEk86U3omJEzVEKtBqD0wWJ03UI8dNMZnWk2LeBESjvnEmw9Rsz9Jzh&#x2B;YgeM63KQLO&#x2B;S5RTOo3TWk0NpRPsnYu4&#x2B;JstE&#x2B;HwXIydnANLSBsPr7Xo2Z62RwKnulLFE2vXzpfOinCPpVLUOTU07UVm5ifzuKnMvBf4jGHn&#x2B;eZfOfnj0SdBAJxhcifLyIWzx&#x2B;XKRmdmDuIle8Pu7kqAxEx01IK6jRdOayG&#x2B;rQGNjGWpr9wug08Ec28hCa/sV6ETpbAJwoQ9LpGXONeSCleDEiV5k6Q16JwyPx4fUtC4kXugCry8dHiUVHm8q62uQJC9kOaHTzlrXgwRksqj1TLtDoTri0&#x2B;vQ0nySuLkT7Fn3ttC7PNFevP3m&#x2B;rz4&#x2B;LNJvBCAC438DprLSrKkkQtaiNPV&#x2B;WwxbpKYEvEuY&#x2B;y5/7ydZTgcsp8nG1Vo/k6t2wlzoffzOY04lHgjgFtqzWWnsI&#x2B;ecyoMItC7kngJGAnEclA3cT6tAe2U0c01vTkCfyoh1fq40O5zkXgnQDShF/c04lSjLjS5EAnwtcRQvibAV1y&#x2B;JsBXXP4/hFFwCo26OVsAAAAASUVORK5CYII=" alt="profile-picture" />
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <span class="dropdown-item">
+                            &#x41F;&#x43E;&#x442;&#x440;&#x435;&#x431;&#x438;&#x442;&#x435;&#x43B;: alehandro.petrov
+                        </span>
+                        <span class="dropdown-item">
+                            &#x41F;&#x43E;&#x437;&#x438;&#x446;&#x438;&#x44F;: Associate
+                        </span>
+                        <div class="dropdown-divider"></div>
+                        <!-- Log out -->
+<form action="/Account/LogOff" id="logoutForm" method="post">                                <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">
+                                    &#x418;&#x437;&#x445;&#x43E;&#x434;
+                                </a>
+</form>                    </div>
+                </li>
+                <li>
+                    <a href="/Home/ChangeLanguage?lang=En">
+                        En
+                    </a>
+                </li>
+            </ul>
+            <!-- end header navigation right -->
+            <!-- begin navbar-collapse -->
+            <div class="collapse navbar-collapse pull-left" id="top-navbar">
+                <div class="menu-control-left">
+                    <a href="javascript:;" data-click="prev-menu"><i class="fa fa-angle-left"></i></a>
+                </div>
+                <div class="menu-control-right">
+                    <a href="javascript:;" data-click="next-menu"><i class="fa fa-angle-right"></i></a>
+                </div>
+                <div id="top-navbar-fixer">
+                    <ul class="nav-custom navbar-nav navbar-nav-custom">
+                        
+    
+                <li class="dropdown dropdown-lg active">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-th-large fa-fw"></i>
+                    &#x423;&#x441;&#x43B;&#x443;&#x433;&#x438; <b class="caret"></b>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(230px, 50px, 0px); width: max-content;">
+                    <div class="row">
+                                <ul class="nav d-block col-lg-4 col-md-4 p-l-20">
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x41C;&#x43E;&#x431;&#x438;&#x43B;&#x43D;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;" href="/bg/Mobile" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x41C;&#x43E;&#x431;&#x438;&#x43B;&#x43D;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;
+                                            </a>
+                                        </li>
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x422;&#x435;&#x43B;&#x435;&#x432;&#x438;&#x437;&#x438;&#x44F;" href="/bg/Tv" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x422;&#x435;&#x43B;&#x435;&#x432;&#x438;&#x437;&#x438;&#x44F;
+                                            </a>
+                                        </li>
+                                        <li class="p-5 ">
+                                            <a data-sectionName="Sky Showtime" href="/bg/Tidal/Tidal" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                Sky Showtime
+                                            </a>
+                                        </li>
+                                </ul>
+                                <ul class="nav d-block col-lg-4 col-md-4 p-l-20">
+                                        <li class="p-5 active">
+                                            <a data-sectionName="&#x41C;&#x43E;&#x431;&#x438;&#x43A;&#x441;" href="/bg/Mobix" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-check-circle"></i>
+
+                                                &#x41C;&#x43E;&#x431;&#x438;&#x43A;&#x441;
+                                            </a>
+                                        </li>
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x41F;&#x43E;&#x434;&#x434;&#x440;&#x44A;&#x436;&#x43A;&#x430;" href="/bg/Support" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x41F;&#x43E;&#x434;&#x434;&#x440;&#x44A;&#x436;&#x43A;&#x430;
+                                            </a>
+                                        </li>
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x418;&#x43D;&#x442;&#x435;&#x440;&#x43D;&#x435;&#x442;" href="/bg/Internet" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x418;&#x43D;&#x442;&#x435;&#x440;&#x43D;&#x435;&#x442;
+                                            </a>
+                                        </li>
+                                </ul>
+                                <ul class="nav d-block col-lg-4 col-md-4 p-l-20">
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x424;&#x438;&#x43A;&#x441;&#x438;&#x440;&#x430;&#x43D;&#x438; &#x433;&#x43B;&#x430;&#x441;&#x43E;&#x432;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;" href="/bg/Fixed" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x424;&#x438;&#x43A;&#x441;&#x438;&#x440;&#x430;&#x43D;&#x438; &#x433;&#x43B;&#x430;&#x441;&#x43E;&#x432;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;
+                                            </a>
+                                        </li>
+                                        <li class="p-5 ">
+                                            <a data-sectionName="&#x41F;&#x440;&#x435;&#x434;&#x43F;&#x43B;&#x430;&#x442;&#x435;&#x43D;&#x438; &#x43C;&#x43E;&#x431;&#x438;&#x43B;&#x43D;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;" href="/bg/MobilePrepaid" class="text-ellipsis top-menu-link">
+                                                    <i class="far fa-dot-circle"></i>
+
+                                                &#x41F;&#x440;&#x435;&#x434;&#x43F;&#x43B;&#x430;&#x442;&#x435;&#x43D;&#x438; &#x43C;&#x43E;&#x431;&#x438;&#x43B;&#x43D;&#x438; &#x443;&#x441;&#x43B;&#x443;&#x433;&#x438;
+                                            </a>
+                                        </li>
+                                </ul>
+                    </div>
+                </div>
+            </li>
+            <li class="dropdown ">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+
+                        <i class="fa fa-th-large fa-fw"></i>
+                    &#x41F;&#x43E;&#x43C;&#x43E;&#x449;&#x43D;&#x438; &#x441;&#x438;&#x441;&#x442;&#x435;&#x43C;&#x438; <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 45px; left: -5px; transform: translate3d(0px, 50px, 0px);">
+
+                            <li class="m-t-5 ">
+                                <a data-sectionName="MRC &#x41A;&#x430;&#x43B;&#x43A;&#x443;&#x43B;&#x430;&#x442;&#x43E;&#x440;" href="/bg/MrcCalculator/MrcCalculator" class="text-ellipsis top-menu-link">
+                                        <i class="far fa-dot-circle"></i>
+
+                                    MRC &#x41A;&#x430;&#x43B;&#x43A;&#x443;&#x43B;&#x430;&#x442;&#x43E;&#x440;
+                                </a>
+                            </li>
+                            <li class="m-t-5 ">
+                                <a data-sectionName="TNPS" href="/bg/Tnps" class="text-ellipsis top-menu-link">
+                                        <i class="far fa-dot-circle"></i>
+
+                                    TNPS
+                                </a>
+                            </li>
+                </ul>
+            </li>
+
+
+
+                    </ul>
+                </div>
+            </div>
+            <!-- end navbar-collapse -->
+        </div>
+        <!-- end #header -->
+        <!-- begin #content -->
+        <div id="content" class="content">
+            
+
+
+
+
+
+    <!-- begin #sidebar -->
+    <div id="sidebar" class="sidebar">
+        <!-- begin sidebar scrollbar -->
+        <div data-scrollbar="true" data-height="100%">
+            <!-- begin sidebar nav -->
+            <ul class="nav nav-custom" id="side-nav">
+                    <li class="nav-header">&#x41C;&#x43E;&#x431;&#x438;&#x43A;&#x441;</li>
+
+            <li class="">
+                <a class="side-menu-link" href="/bg/Mobix/TariffPackets">
+                            <i data-toggle="tooltip" title="&#x422;&#x430;&#x440;&#x438;&#x444;&#x430; &#x438; &#x434;&#x43E;&#x43F;&#x44A;&#x43B;&#x43D;&#x438;&#x442;&#x435;&#x43B;&#x43D;&#x438; &#x43F;&#x430;&#x43A;&#x435;&#x442;&#x438;" class="far fa-list-alt"></i>
+                        <span>&#x422;&#x430;&#x440;&#x438;&#x444;&#x430; &#x438; &#x434;&#x43E;&#x43F;&#x44A;&#x43B;&#x43D;&#x438;&#x442;&#x435;&#x43B;&#x43D;&#x438; &#x43F;&#x430;&#x43A;&#x435;&#x442;&#x438;</span>
+                    </a>
+            </li>
+            <li class="">
+                <a class="side-menu-link" href="/bg/Mobix/MobixSettings">
+                            <i data-toggle="tooltip" title="&#x41D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x438; &#x43D;&#x430; &#x41C;&#x43E;&#x431;&#x438;&#x43A;&#x441;" class="fas fa-archive"></i>
+                        <span>&#x41D;&#x430;&#x441;&#x442;&#x440;&#x43E;&#x439;&#x43A;&#x438; &#x43D;&#x430; &#x41C;&#x43E;&#x431;&#x438;&#x43A;&#x441;</span>
+                    </a>
+            </li>
+            <li class="">
+                <a class="side-menu-link" href="/bg/Mobix/AutomaticPack">
+                            <i data-toggle="tooltip" title="&#x410;&#x432;&#x442;&#x43E;&#x43C;&#x430;&#x442;&#x438;&#x447;&#x435;&#x43D; &#x43F;&#x430;&#x43A;&#x435;&#x442;" class="fas fa-bold"></i>
+                        <span>&#x410;&#x432;&#x442;&#x43E;&#x43C;&#x430;&#x442;&#x438;&#x447;&#x435;&#x43D; &#x43F;&#x430;&#x43A;&#x435;&#x442;</span>
+                    </a>
+            </li>
+            <li class="">
+                <a class="side-menu-link" href="/bg/Mobix/AuditInfo">
+                            <i data-toggle="tooltip" title="&#x418;&#x441;&#x442;&#x43E;&#x440;&#x438;&#x44F; &#x43D;&#x430; &#x434;&#x435;&#x439;&#x441;&#x442;&#x432;&#x438;&#x44F;&#x442;&#x430;" class="fas fa-archive"></i>
+                        <span>&#x418;&#x441;&#x442;&#x43E;&#x440;&#x438;&#x44F; &#x43D;&#x430; &#x434;&#x435;&#x439;&#x441;&#x442;&#x432;&#x438;&#x44F;&#x442;&#x430;</span>
+                    </a>
+            </li>
+
+                <!-- begin sidebar minify button -->
+                <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+                <!-- end sidebar minify button -->
+            </ul>
+
+            <!-- end sidebar nav -->
+        </div>
+        <!-- end sidebar scrollbar -->
+    </div>
+    <div class="sidebar-bg"></div>
+    <!-- end #sidebar -->
+
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-inverse" data-sortable="false">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                </div>
+                <h4 class="panel-title">&#x422;&#x44A;&#x440;&#x441;&#x435;&#x43D;&#x435;</h4>
+            </div>
+            <div class="panel-body">
+                <div>
+                    
+
+<div class="container-fluid m-t-5 m-b-5">
+<form action="/bg/Mobix" method="get" role="form">        <div class="row">
+            <input class="form-check-input" data-val="true" data-val-required="The DisableCaching field is required." id="DisableCaching" name="DisableCaching" type="hidden" value="False" />
+            <div class="col-md-8 offset-md-2">
+                <input class="form-control" data-placement="top" data-toggle="tooltip" id="SearchParameter" name="SearchParameter" title="" type="text" value="" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-2">
+                <div class="form-check">
+                    <input class="form-check-input" data-val="true" data-val-required="The OnlineData field is required." id="OnlineData" name="OnlineData" type="checkbox" value="true" />
+                    <label class="form-check-label" for="OnlineData">&#x418;&#x437;&#x432;&#x43B;&#x438;&#x447;&#x430;&#x43D;&#x435; &#x43D;&#x430; &#x430;&#x43A;&#x442;&#x443;&#x430;&#x43B;&#x43D;&#x438; &#x434;&#x430;&#x43D;&#x43D;&#x438;</label>
+                </div>
+            </div>
+            <div class="col-md-2 mt-2 text-right">
+                <button type="submit" class="btn btn-primary">&#x422;&#x44A;&#x440;&#x441;&#x438;</button>
+            </div>
+        </div>
+<input name="OnlineData" type="hidden" value="false" /></form>    <div class="row">
+        <div class="validation-summary col-md-4 offset-md-4 text-center">
+            <div class="text-danger font-weight-bold m-t-5 m-l-5 validation-summary-valid" data-valmsg-summary="true"><ul><li style="display:none"></li>
+</ul></div>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-inverse" data-sortable="false">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                </div>
+                <h4 class="panel-title">&#x418;&#x43D;&#x444;&#x43E;&#x440;&#x43C;&#x430;&#x446;&#x438;&#x44F;</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-sm-custom table-striped table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="w-50">
+                                <label for="MSISDN">MSISDN </label>
+                            </td>
+                            <td class="w-50">
+                                <span data-iris-parameter="MSISDN"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="ICC">ICC </label>
+                            </td>
+                            <td>
+                                <span data-iris-parameter="ICC"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="IMSI">IMSI </label>
+                            </td>
+                            <td>
+                                <span data-iris-parameter="IMSI"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span data-iris-parameter="disableCaching" hidden>False</span>
+<span data-iris-parameter="onlineData" hidden>False</span>
+
+
+
+
+
+
+        </div>
+
+        <div id="out-of-content">
+            
+        </div>
+
+        <!-- end #content -->
+        <!-- begin scroll to top btn -->
+        <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
+        <!-- end scroll to top btn -->
+    </div>
+    <!-- end page container -->
+    
+    
+        <script src="/bundles/js/base.body.min.js"></script>
+        <script src="/bundles/js/mega.menu.link.override.min.js"></script>
+        <script src="/bundles/js/kendo.extensions.min.js"></script> 
+    
+    <script>
+        $(document).ready(function () {
+            kendo.culture('bg');
+
+            App.init();
+
+            var applicationPath = '',
+                requestAction = 'Index',
+                requestController = 'Home',
+                lang = 'bg',
+                area = 'Mobix';
+
+            main.init(applicationPath, requestAction, requestController, area, lang);
+        });
+    </script>
+
+        <script src="/lib/kendo/js/cultures/kendo.culture.bg-BG.min.js"></script>
+        <script src="/lib/kendo/js/messages/kendo.messages.bg-BG.min.js"></script>
+
+    
+    
+    
+    
+        <script src="/bundles/js/base/side.menu.link.override.min.js"></script>
+    
+
 
 </body>
 </html>
