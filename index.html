@@ -2,116 +2,224 @@
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
-<title>Terminal Access</title>
+<title>Access Terminal</title>
 
 <style>
-    body {
-        margin: 0;
-        background: black;
-        color: #00ff00;
-        font-family: monospace;
-        overflow: hidden;
-    }
+body {
+    margin: 0;
+    background: black;
+    color: #00ff00;
+    font-family: monospace;
+    overflow: hidden;
+}
 
-    /* терминал ефект */
-    .terminal {
-        padding: 20px;
-        font-size: 16px;
-        line-height: 1.4;
-        white-space: pre-wrap;
-    }
+/* matrix */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
 
-    .login-box {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-    }
+/* terminal */
+.terminal {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background: rgba(0,0,0,0.85);
+    padding: 25px;
+    border: 1px solid #00ff00;
+    box-shadow: 0 0 20px #00ff00;
+    text-align: center;
+}
 
-    input {
-        background: black;
-        border: 1px solid #00ff00;
-        color: #00ff00;
-        padding: 10px;
-        width: 220px;
-        text-align: center;
-        font-family: monospace;
-    }
+/* title */
+.title {
+    font-size: 22px;
+    margin-bottom: 15px;
+    animation: glitch 0.3s infinite;
+}
 
-    button {
-        margin-top: 10px;
-        padding: 10px 20px;
-        background: black;
-        border: 1px solid #00ff00;
-        color: #00ff00;
-        cursor: pointer;
-    }
+@keyframes glitch {
+    0% { text-shadow: 2px 0 red; }
+    50% { text-shadow: -2px 0 blue; }
+    100% { text-shadow: 2px 0 red; }
+}
 
-    button:hover {
-        background: #00ff00;
-        color: black;
-    }
+/* input */
+input {
+    width: 80%;
+    padding: 10px;
+    margin-top: 10px;
+    background: black;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    text-align: center;
+}
 
-    .blink {
-        animation: blink 1s infinite;
-    }
+/* button */
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: black;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    cursor: pointer;
+}
 
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
+button:hover {
+    background: #00ff00;
+    color: black;
+}
+
+/* log */
+.log {
+    margin-top: 10px;
+    text-align: left;
+    font-size: 13px;
+    height: 120px;
+    overflow: hidden;
+    white-space: pre-line;
+}
+
+/* error */
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* shake */
+.shake {
+    animation: shake 0.2s;
+}
+
+@keyframes shake {
+    0% { transform: translate(-50%, -50%) }
+    25% { transform: translate(-48%, -52%) }
+    50% { transform: translate(-52%, -48%) }
+    75% { transform: translate(-49%, -51%) }
+    100% { transform: translate(-50%, -50%) }
+}
 </style>
 </head>
 
 <body>
 
-<div class="terminal" id="terminal"></div>
+<canvas id="matrix"></canvas>
 
-<div class="login-box">
-    <div>ENTER ACCESS KEY:</div>
-    <input type="password" id="password">
+<div class="terminal" id="box">
+    <div class="title">SECURE ACCESS TERMINAL</div>
+
+    <div id="typing"></div>
+
+    <input type="password" id="password" placeholder="ENTER KEY">
     <br>
-    <button onclick="checkPassword()">RUN</button>
+    <button onclick="login()">EXECUTE</button>
+
+    <div id="error" class="error"></div>
+    <div id="log" class="log"></div>
 </div>
 
 <script>
-const terminal = document.getElementById("terminal");
+// MATRIX
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
 
-const lines = [
-"Initializing system...",
-"Connecting to server...",
-"Bypassing firewall...",
-"Loading modules...",
-"Access denied... retry required",
-"Waiting for input...",
-];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-let i = 0;
+const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
 
-function typeLines() {
-    if (i < lines.length) {
-        terminal.innerHTML += lines[i] + "\n";
-        i++;
-        setTimeout(typeLines, 800);
-    } else {
-        terminal.innerHTML += "\n> SYSTEM READY\n";
+const drops = [];
+for (let i = 0; i < columns; i++) drops[i] = 1;
+
+function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ff00";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+        if (drops[i]*fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
     }
 }
 
-typeLines();
+setInterval(draw, 33);
 
-function checkPassword() {
+// typing intro
+const intro = "Initializing secure channel...\nWaiting for access key...";
+let i = 0;
+const typing = document.getElementById("typing");
+
+function typeIntro() {
+    if (i < intro.length) {
+        typing.innerHTML += intro.charAt(i);
+        i++;
+        setTimeout(typeIntro, 30);
+    }
+}
+typeIntro();
+
+// LOGIN
+function login() {
     const pass = document.getElementById("password").value;
+    const log = document.getElementById("log");
+    const error = document.getElementById("error");
+    const box = document.getElementById("box");
+
+    error.innerHTML = "";
+    log.innerHTML = "";
 
     if (pass === "Azis") {
-        terminal.innerHTML += "\n> ACCESS GRANTED...\n> REDIRECTING...\n";
-        setTimeout(() => {
-            window.location.href = "body.html";
-        }, 1500);
+
+        const steps = [
+            "> Checking key...",
+            "> Decrypting...",
+            "> Access granted ✔",
+            "> Redirecting..."
+        ];
+
+        let line = 0;
+
+        function runLogs() {
+            if (line < steps.length) {
+                log.innerHTML += steps[line] + "\n";
+                line++;
+                setTimeout(runLogs, 400);
+            } else {
+                setTimeout(() => {
+                    window.location.href = "body.html";
+                }, 800);
+            }
+        }
+
+        runLogs();
+
     } else {
-        terminal.innerHTML += "\n> WRONG KEY DETECTED ❌\n";
+        error.innerHTML = "ACCESS DENIED ❌";
+        box.classList.add("shake");
+        setTimeout(() => box.classList.remove("shake"), 300);
     }
 }
+
+// ENTER key support
+document.getElementById("password").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        login();
+    }
+});
 </script>
 
 </body>
